@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
 
@@ -34,7 +35,7 @@ namespace Bazy_danych.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(string email, string password, bool remember = false)
+        public ActionResult Login(string email, string password)
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
@@ -42,8 +43,17 @@ namespace Bazy_danych.Controllers
                 return View();
             }
 
-            TempData["LoginMessage"] = "Formularz logowania został wysłany.";
-            return RedirectToAction("Login");
+            try
+            {
+                var parsedEmail = new MailAddress(email);
+            }
+            catch (FormatException)
+            {
+                ViewBag.ErrorMessage = "Wprowadź poprawny adres e-mail.";
+                return View();
+            }
+
+            return RedirectToAction("Index");
         }
     }
 }

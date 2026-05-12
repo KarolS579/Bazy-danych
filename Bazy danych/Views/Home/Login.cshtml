@@ -8,13 +8,6 @@
             <div class="card-body p-4">
                 <h2 class="h4 mb-4 text-center">Zaloguj się</h2>
 
-                @if (TempData["LoginMessage"] != null)
-                {
-                    <div class="alert alert-success" role="alert">
-                        @TempData["LoginMessage"]
-                    </div>
-                }
-
                 @if (ViewBag.ErrorMessage != null)
                 {
                     <div class="alert alert-danger" role="alert">
