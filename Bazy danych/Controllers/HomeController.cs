@@ -26,5 +26,10 @@ namespace Bazy_danych.Controllers
 
             return View();
         }
+
+        public ActionResult Login()
+        {
+            return View();
+        }
     }
 }
