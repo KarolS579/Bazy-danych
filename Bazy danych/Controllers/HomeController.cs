@@ -31,5 +31,19 @@ namespace Bazy_danych.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(string email, string password, bool remember = false)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                ViewBag.ErrorMessage = "Wprowadź adres e-mail i hasło.";
+                return View();
+            }
+
+            TempData["LoginMessage"] = "Formularz logowania został wysłany.";
+            return RedirectToAction("Login");
+        }
     }
 }

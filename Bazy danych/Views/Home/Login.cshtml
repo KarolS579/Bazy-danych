@@ -8,26 +8,42 @@
             <div class="card-body p-4">
                 <h2 class="h4 mb-4 text-center">Zaloguj się</h2>
 
-                <form>
+                @if (TempData["LoginMessage"] != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        @TempData["LoginMessage"]
+                    </div>
+                }
+
+                @if (ViewBag.ErrorMessage != null)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @ViewBag.ErrorMessage
+                    </div>
+                }
+
+                @using (Html.BeginForm("Login", "Home", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
                     <div class="mb-3">
                         <label for="email" class="form-label">Adres e-mail</label>
-                        <input type="email" class="form-control" id="email" placeholder="twoj@email.pl" required>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="twoj@email.pl" required>
                     </div>
 
                     <div class="mb-3">
                         <label for="password" class="form-label">Hasło</label>
-                        <input type="password" class="form-control" id="password" placeholder="Wpisz hasło" required>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Wpisz hasło" required>
                     </div>
 
                     <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="remember">
+                        <input class="form-check-input" type="checkbox" id="remember" name="remember" value="true">
                         <label class="form-check-label" for="remember">
                             Zapamiętaj mnie
                         </label>
                     </div>
 
                     <button type="submit" class="btn btn-warning w-100 fw-bold">Zaloguj</button>
-                </form>
+                }
             </div>
         </div>
     </div>
