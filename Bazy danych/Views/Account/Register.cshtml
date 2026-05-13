@@ -1,0 +1,59 @@
+﻿@* encoding: utf-8 *@
+@model Bazy_danych.Models.RegisterViewModel
+
+@{
+    ViewBag.Title = "Rejestracja";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm mt-4">
+            <div class="card-body p-4">
+                <h2 class="h4 mb-4 text-center">Utwórz konto</h2>
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <h5>Błędy walidacji:</h5>
+                        <ul class="mb-0">
+                            @foreach (var modelState in ViewData.ModelState.Values)
+                            {
+                                foreach (var error in modelState.Errors)
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                }
+
+                @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Adres e-mail</label>
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @type = "email", @placeholder = "twoj@email.pl", @required = "required" })
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Hasło</label>
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Minimalne 6 znaków", @required = "required" })
+                        <small class="form-text text-muted">Hasło musi mieć co najmniej 6 znaków.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Potwierdź hasło</label>
+                        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", @placeholder = "Wpisz hasło ponownie", @required = "required" })
+                    </div>
+
+                    <button type="submit" class="btn btn-warning w-100 fw-bold">Zarejestruj</button>
+                }
+
+                <div class="text-center mt-3">
+                    <p class="mb-0">Masz już konto? @Html.ActionLink("Zaloguj się tutaj", "Login", "Account")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
