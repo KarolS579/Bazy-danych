@@ -4,11 +4,14 @@ using System.Linq;
 using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
+using Bazy_danych.Models;
 
 namespace Bazy_danych.Controllers
 {
     public class HomeController : Controller
     {
+        private ApplicationDbContext db = new ApplicationDbContext();
+
         public ActionResult Index()
         {
             return View();
@@ -28,32 +31,13 @@ namespace Bazy_danych.Controllers
             return View();
         }
 
-        public ActionResult Login()
+        protected override void Dispose(bool disposing)
         {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Login(string email, string password)
-        {
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            if (disposing)
             {
-                ViewBag.ErrorMessage = "Wprowadź adres e-mail i hasło.";
-                return View();
+                db.Dispose();
             }
-
-            try
-            {
-                var parsedEmail = new MailAddress(email);
-            }
-            catch (FormatException)
-            {
-                ViewBag.ErrorMessage = "Wprowadź poprawny adres e-mail.";
-                return View();
-            }
-
-            return RedirectToAction("Index");
+            base.Dispose(disposing);
         }
     }
 }

@@ -1,0 +1,60 @@
+﻿@* encoding: utf-8 *@
+@model Bazy_danych.Models.LoginViewModel
+
+@{
+    ViewBag.Title = "Logowanie";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm mt-4">
+            <div class="card-body p-4">
+                <h2 class="h4 mb-4 text-center">Zaloguj się</h2>
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @foreach (var modelState in ViewData.ModelState.Values)
+                        {
+                            foreach (var error in modelState.Errors)
+                            {
+                                <p>@error.ErrorMessage</p>
+                            }
+                        }
+                    </div>
+                }
+
+                @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Adres e-mail</label>
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @type = "email", @placeholder = "twoj@email.pl", @required = "required" })
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Hasło</label>
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Wpisz hasło", @required = "required" })
+                    </div>
+
+                    <div class="form-check mb-3">
+                        @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
+                        <label class="form-check-label" for="RememberMe">
+                            Zapamiętaj mnie
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-warning w-100 fw-bold">Zaloguj</button>
+                }
+
+                <div class="text-center mt-3">
+                    <p class="mb-0">
+                        Nie masz konta? <br>
+                        @Html.ActionLink("Zarejestruj się tutaj", "Register", "Account", null, new { @class = "btn btn-outline-warning btn-sm mt-2" })
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
