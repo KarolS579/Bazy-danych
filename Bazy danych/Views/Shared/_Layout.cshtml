@@ -26,7 +26,7 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
+        <div class="container-fluid">
             <a class="navbar-brand" href="@Url.Action("Index", "Home")">BuildRent</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -34,19 +34,19 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Sprzęt</a>
+                        <a class="nav-link" href="@Url.Action("Equipment", "Home")">Sprzęt</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Magazyny</a>
+                        <a class="nav-link" href="@Url.Action("Warehouses", "Home")">Magazyny</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Klienci</a>
+                        <a class="nav-link" href="@Url.Action("Customers", "Home")">Klienci</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Wynajem i Rezerwacje</a>
+                        <a class="nav-link" href="@Url.Action("Rentals", "Home")">Wynajem i Rezerwacje</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Serwis</a>
+                        <a class="nav-link" href="@Url.Action("Services", "Home")">Serwis</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
@@ -58,7 +58,7 @@
                         if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link btn btn-warning text-dark px-3 ms-2" href="#">Panel Admina</a>
+                                <a class="nav-link btn btn-warning px-3 ms-2" href="@Url.Action("Panel", "Home")">Panel Admina</a>
                             </li>
                         }
                         <li class="nav-item">
