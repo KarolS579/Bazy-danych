@@ -1,0 +1,9 @@
+﻿root = true
+
+# Apply UTF-8 with BOM to all files
+[*]
+charset = utf-8-bom
+
+# Optional: You can specify only certain file types if you prefer
+[*.{cs,cshtml,html,css,js}]
+charset = utf-8-bom
