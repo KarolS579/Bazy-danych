@@ -1,4 +1,4 @@
-@* encoding: utf-8 *@
+﻿@* encoding: utf-8 *@
 @model Bazy_danych.Models.Magazyn
 
 @{
@@ -13,7 +13,7 @@
                     Dodaj nowy magazyn
                 </div>
                 <div class="card-body">
-                    @using (Html.BeginForm("AddWarehouse", "Home", FormMethod.Post))
+                    @using (Html.BeginForm("AddWarehouse", "Warehouse", FormMethod.Post))
                     {
                         @Html.AntiForgeryToken()
                         @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
@@ -50,7 +50,7 @@
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-info fw-bold text-white">Zapisz magazyn</button>
-                            <a href="@Url.Action("Warehouses", "Home")" class="btn btn-secondary">Anuluj</a>
+                            <a href="@Url.Action("Warehouses", "Warehouse")" class="btn btn-secondary">Anuluj</a>
                         </div>
                     }
                 </div>
