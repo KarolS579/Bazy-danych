@@ -6,6 +6,8 @@ using Bazy_danych.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security.DataProtection;
 
 namespace Bazy_danych.Controllers
 {
@@ -23,6 +25,12 @@ namespace Bazy_danych.Controllers
         {
             db = new ApplicationDbContext();
             userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
+            userManager.EmailService = new EmailService();
+
+            var provider = new DpapiDataProtectionProvider("Bazy_danych");
+            userManager.UserTokenProvider =
+                new DataProtectorTokenProvider<ApplicationUser>(provider.Create("ASP.NET Identity"));
+
             roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(db));
         }
 
@@ -40,25 +48,26 @@ namespace Bazy_danych.Controllers
             if (ModelState.IsValid)
             {
                 // Create a new user
-                var user = new ApplicationUser 
-                { 
-                    UserName = model.Email, 
-                    Email = model.Email 
-                };
-
+                var user = new ApplicationUser{ UserName = model.Email, Email = model.Email };
                 var result = userManager.Create(user, model.Password);
                 if (result.Succeeded)
                 {
-                    // Assign user to "User" role by default (only regular users can register)
                     if (!roleManager.RoleExists("User"))
                     {
                         roleManager.Create(new IdentityRole("User"));
                     }
                     userManager.AddToRole(user.Id, "User");
 
-                    // Sign the user in
-                    await SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    var code = await userManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account",
+                        new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+
+                    await userManager.SendEmailAsync(
+                        user.Id,
+                        "Confirm your account",
+                        "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+
+                    return View("DisplayEmail");
                 }
                 else
                 {
@@ -67,6 +76,24 @@ namespace Bazy_danych.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                return new HttpStatusCodeResult(400);
+            }
+
+            var result = await userManager.ConfirmEmailAsync(userId, code);
+
+            if (result.Succeeded)
+            {
+                return View("ConfirmEmail");
+            }
+
+            return new HttpStatusCodeResult(400);
         }
 
         // GET: Account/Login
@@ -81,13 +108,28 @@ namespace Bazy_danych.Controllers
         public async Task<ActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
-            {
+            {   
                 var user = userManager.FindByEmail(model.Email);
-                if (user != null && userManager.CheckPassword(user, model.Password))
+                if (user != null && !user.EmailConfirmed)
+                {
+                    var code = await userManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account",
+                        new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+
+                    await userManager.SendEmailAsync(
+                        user.Id,
+                        "Confirm your account",
+                        "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+
+                    return View("DisplayEmail");
+                }
+
+                else if (user != null && user.EmailConfirmed && userManager.CheckPassword(user, model.Password))
                 {
                     await SignInAsync(user, model.RememberMe);
                     return RedirectToAction("Index", "Home");
                 }
+
                 else
                 {
                     ModelState.AddModelError("", "Nieprawidłowy email lub hasło.");
@@ -123,6 +165,67 @@ namespace Bazy_danych.Controllers
             }
 
             return RedirectToAction("ManageUsers", "Admin");
+        }
+
+        // This is intentionally restricted so only an existing admin can create/assign admins.
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateAdmin(string email, string password)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                return new HttpStatusCodeResult(400, "Email and password are required.");
+            }
+
+            if (!roleManager.RoleExists("Admin"))
+            {
+                roleManager.Create(new IdentityRole("Admin"));
+            }
+
+            var user = userManager.FindByEmail(email);
+            if (user == null)
+            {
+                user = new ApplicationUser
+                {
+                    UserName = email,
+                    Email = email
+                };
+
+                var result = userManager.Create(user, password);
+                if (!result.Succeeded)
+                {
+                    return new HttpStatusCodeResult(400, string.Join("; ", result.Errors));
+                }
+            }
+
+            if (!userManager.IsInRole(user.Id, "Admin"))
+            {
+                userManager.AddToRole(user.Id, "Admin");
+            }
+
+            return new HttpStatusCodeResult(200, "Admin created or updated.");
+        }
+
+        // POST: Admin/RemoveAdmin
+        // This is for admins to remove the admin role from a user
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult RemoveAdmin(string userId)
+        {
+            var user = userManager.FindById(userId);
+            if (user == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (userManager.IsInRole(userId, "Admin"))
+            {
+                userManager.RemoveFromRole(userId, "Admin");
+            }
+
+            return new HttpStatusCodeResult(200, "Admin role removed.");
         }
 
         // Helper method to sign in user

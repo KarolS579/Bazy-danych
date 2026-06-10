@@ -31,6 +31,36 @@ namespace Bazy_danych.Controllers
             return View();
         }
 
+        public ActionResult Equipment()
+        {
+            return View();
+        }
+
+        public ActionResult Warehouses()
+        {
+            return View();
+        }
+
+        public ActionResult Customers()
+        {
+            return View();
+        }
+
+        public ActionResult Rentals()
+        {
+            return View();
+        }
+
+        public ActionResult Services()
+        {
+            return View();
+        }
+
+        public ActionResult Panel()
+        {
+            return View();
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
