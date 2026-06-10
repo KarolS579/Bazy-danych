@@ -23,5 +23,7 @@ namespace Bazy_danych.Models
         }
 
         public DbSet<Sprzet> Sprzet { get; set; }
+        public DbSet<Magazyn> Magazyny { get; set; }
+        public DbSet<PendingRegistration> PendingRegistrations { get; set; }
     }
 }

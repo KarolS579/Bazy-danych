@@ -1,8 +1,8 @@
 @* encoding: utf-8 *@
-@model Bazy_danych.Models.Sprzet
+@model Bazy_danych.Models.Magazyn
 
 @{
-    ViewBag.Title = "Edytuj sprzęt";
+    ViewBag.Title = "Edytuj magazyn";
 }
 
 <div class="container mt-4">
@@ -10,10 +10,10 @@
         <div class="col-md-7">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white fw-bold">
-                    Edytuj sprzęt
+                    Edytuj magazyn
                 </div>
                 <div class="card-body">
-                    @using (Html.BeginForm("EditEquipment", "Home", FormMethod.Post))
+                    @using (Html.BeginForm("EditWarehouse", "Home", FormMethod.Post))
                     {
                         @Html.AntiForgeryToken()
                         @Html.HiddenFor(m => m.Id)
@@ -26,26 +26,32 @@
                         </div>
 
                         <div class="mb-3">
-                            @Html.LabelFor(m => m.Kategoria, new { @class = "form-label" })
-                            @Html.TextBoxFor(m => m.Kategoria, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.Kategoria, "", new { @class = "text-danger small" })
+                            @Html.LabelFor(m => m.Lokalizacja, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Lokalizacja, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Lokalizacja, "", new { @class = "text-danger small" })
                         </div>
 
                         <div class="mb-3">
-                            @Html.LabelFor(m => m.Cena_wynajmu, "Cena wynajmu (PLN/doba)", new { @class = "form-label" })
-                            @Html.TextBoxFor(m => m.Cena_wynajmu, new { @class = "form-control", type = "number", step = "0.01", min = "0.01" })
-                            @Html.ValidationMessageFor(m => m.Cena_wynajmu, "", new { @class = "text-danger small" })
+                            @Html.LabelFor(m => m.Pojemnosc, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Pojemnosc, new { @class = "form-control", type = "number", min = "1" })
+                            @Html.ValidationMessageFor(m => m.Pojemnosc, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.ZajeteMiejsce, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.ZajeteMiejsce, new { @class = "form-control", type = "number", min = "0" })
+                            @Html.ValidationMessageFor(m => m.ZajeteMiejsce, "", new { @class = "text-danger small" })
                         </div>
 
                         <div class="mb-3">
                             @Html.LabelFor(m => m.Status, new { @class = "form-label" })
-                            @Html.DropDownListFor(m => m.Status, (SelectList)ViewBag.Statuses, "Wybierz status", new { @class = "form-select" })
+                            @Html.DropDownListFor(m => m.Status, new SelectList(new[] { "Aktywny", "Przepełniony", "Nieaktywny" }, Model.Status), new { @class = "form-select" })
                             @Html.ValidationMessageFor(m => m.Status, "", new { @class = "text-danger small" })
                         </div>
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary fw-bold">Zapisz zmiany</button>
-                            <a href="@Url.Action("Equipment", "Home")" class="btn btn-secondary">Anuluj</a>
+                            <a href="@Url.Action("Warehouses", "Home")" class="btn btn-secondary">Anuluj</a>
                         </div>
                     }
                 </div>

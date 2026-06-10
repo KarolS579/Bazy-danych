@@ -1,4 +1,6 @@
 ﻿@* encoding: utf-8 *@
+@model IEnumerable<Bazy_danych.Models.Magazyn>
+
 @{
     ViewBag.Title = "Magazyny";
 }
@@ -6,125 +8,84 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Magazyny</h2>
-        <button class="btn btn-info fw-bold">+ Dodaj nowy magazyn</button>
+        <a class="btn btn-info fw-bold" href="@Url.Action("AddWarehouse", "Home")">+ Dodaj nowy magazyn</a>
     </div>
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <table class="table table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Nazwa Magazynu</th>
-                        <th>Lokalizacja</th>
-                        <th>Pojemność</th>
-                        <th>Zajętość</th>
-                        <th>Status</th>
-                        <th>Akcje</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Magazyn Główny</td>
-                        <td>Kraków</td>
-                        <td>500 jednostek</td>
-                        <td>
-                            <div class="progress" style="height: 25px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100">65%</div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-success">Aktywny</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary">Szczegóły</button>
-                            <button class="btn btn-sm btn-outline-secondary">Edytuj</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Magazyn Wschód</td>
-                        <td>Warszawa</td>
-                        <td>350 jednostek</td>
-                        <td>
-                            <div class="progress" style="height: 25px;">
-                                <div class="progress-bar bg-warning" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">85%</div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-success">Aktywny</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary">Szczegóły</button>
-                            <button class="btn btn-sm btn-outline-secondary">Edytuj</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Magazyn Południowy</td>
-                        <td>Wrocław</td>
-                        <td>400 jednostek</td>
-                        <td>
-                            <div class="progress" style="height: 25px;">
-                                <div class="progress-bar bg-danger" role="progressbar" style="width: 95%" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100">95%</div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-warning text-dark">Przełóż</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary">Szczegóły</button>
-                            <button class="btn btn-sm btn-outline-secondary">Edytuj</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Magazyn Północny</td>
-                        <td>Gdańsk</td>
-                        <td>300 jednostek</td>
-                        <td>
-                            <div class="progress" style="height: 25px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100">40%</div>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-success">Aktywny</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary">Szczegóły</button>
-                            <button class="btn btn-sm btn-outline-secondary">Edytuj</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Statystyka -->
-    <div class="row mt-4">
-        <div class="col-md-3 mb-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <h5 class="text-muted">Całkowita pojemność</h5>
-                    <h3 class="fw-bold text-info">1,550</h3>
-                    <p class="text-muted small">jednostek</p>
+            @if (Model != null && Model.Any())
+            {
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Nazwa Magazynu</th>
+                            <th>Lokalizacja</th>
+                            <th>Pojemność</th>
+                            <th>Zajętość</th>
+                            <th>Status</th>
+                            <th>Data dodania</th>
+                            <th>Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            var occupancy = item.Pojemnosc > 0 ? (int)Math.Round((item.ZajeteMiejsce * 100.0) / item.Pojemnosc) : 0;
+                            var barClass = occupancy >= 90 ? "bg-danger" : (occupancy >= 70 ? "bg-warning" : "bg-success");
+                            <tr>
+                                <td>@item.Nazwa</td>
+                                <td>@item.Lokalizacja</td>
+                                <td>@item.Pojemnosc jednostek</td>
+                                <td>
+                                    <div class="progress position-relative" style="height: 25px;">
+                                        <div class="progress-bar @barClass"
+                                             role="progressbar"
+                                             style="width: @occupancy%;"
+                                             aria-valuenow="@occupancy"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100">
+                                        </div>
+                                        <span class="position-absolute top-50 start-50 translate-middle fw-semibold"
+                                              style="color:#212529; z-index:2; pointer-events:none;">
+                                            @occupancy%
+                                        </span>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (item.Status == "Aktywny")
+                                    {
+                                        <span class="badge bg-success">Aktywny</span>
+                                    }
+                                    else if (item.Status == "Przepełniony")
+                                    {
+                                        <span class="badge bg-warning text-dark">Przepełniony</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Nieaktywny</span>
+                                    }
+                                </td>
+                                <td>@item.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>
+                                    <a class="btn btn-sm btn-outline-primary" href="@Url.Action("EditWarehouse", "Home", new { id = item.Id })">Edytuj</a>
+                                    @using (Html.BeginForm("DeleteWarehouse", "Home", FormMethod.Post, new { @style = "display:inline;" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Czy na pewno chcesz usunąć ten magazyn?');">Usuń</button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-warning mb-0">
+                    Brak magazynów w bazie. Kliknij <strong>+ Dodaj nowy magazyn</strong>, aby dodać pierwszy wpis.
                 </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <h5 class="text-muted">Zajęte miejsce</h5>
-                    <h3 class="fw-bold text-warning">1,145</h3>
-                    <p class="text-muted small">jednostek</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <h5 class="text-muted">Wolne miejsce</h5>
-                    <h3 class="fw-bold text-success">405</h3>
-                    <p class="text-muted small">jednostek</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <h5 class="text-muted">Średnia zajętość</h5>
-                    <h3 class="fw-bold text-primary">71%</h3>
-                    <p class="text-muted small">wszystkich magazynów</p>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </div>

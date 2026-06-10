@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -34,48 +35,118 @@ namespace Bazy_danych.Controllers
             roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(db));
         }
 
-        // GET: Account/Register
         public ActionResult Register()
         {
             return View();
         }
 
-        // POST: Account/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                // Create a new user
-                var user = new ApplicationUser{ UserName = model.Email, Email = model.Email };
-                var result = userManager.Create(user, model.Password);
-                if (result.Succeeded)
+                if (userManager.FindByEmail(model.Email) != null)
                 {
-                    if (!roleManager.RoleExists("User"))
+                    ModelState.AddModelError("", "Użytkownik z tym adresem e-mail już istnieje.");
+                    return View(model);
+                }
+
+                var existingPending = db.PendingRegistrations.FirstOrDefault(x => x.Email == model.Email);
+                if (existingPending != null)
+                {
+                    var secondsSinceLastSend = (DateTime.UtcNow - existingPending.CreatedAtUtc).TotalSeconds;
+                    if (secondsSinceLastSend < 30)
                     {
-                        roleManager.Create(new IdentityRole("User"));
+                        var waitSeconds = (int)Math.Ceiling(30 - secondsSinceLastSend);
+                        ModelState.AddModelError("", "Mail potwierdzający został już wysłany. Spróbuj ponownie za " + waitSeconds + " s.");
+                        return View(model);
                     }
-                    userManager.AddToRole(user.Id, "User");
 
-                    var code = await userManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account",
-                        new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    db.PendingRegistrations.Remove(existingPending);
+                    db.SaveChanges();
+                }
 
-                    await userManager.SendEmailAsync(
-                        user.Id,
-                        "Confirm your account",
-                        "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+                var token = Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
+                var pending = new PendingRegistration
+                {
+                    Email = model.Email,
+                    PasswordHash = userManager.PasswordHasher.HashPassword(model.Password),
+                    ConfirmationToken = token,
+                    CreatedAtUtc = DateTime.UtcNow,
+                    ExpiresAtUtc = DateTime.UtcNow.AddHours(24)
+                };
+
+                db.PendingRegistrations.Add(pending);
+                db.SaveChanges();
+
+                try
+                {
+                    var callbackUrl = Url.Action("ConfirmPendingRegistration", "Account",
+                        new { token = pending.ConfirmationToken }, protocol: Request.Url.Scheme);
+
+                    await new EmailService().SendAsync(new IdentityMessage
+                    {
+                        Destination = pending.Email,
+                        Subject = "Confirm your account",
+                        Body = "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>"
+                    });
 
                     return View("DisplayEmail");
                 }
-                else
+                catch
                 {
-                    AddErrors(result);
+                    db.PendingRegistrations.Remove(pending);
+                    db.SaveChanges();
+                    ModelState.AddModelError("", "Nie udało się wysłać maila potwierdzającego. Konto nie zostało utworzone. Sprawdź konfigurację SMTP i spróbuj ponownie.");
                 }
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> ConfirmPendingRegistration(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return new HttpStatusCodeResult(400);
+            }
+
+            var pending = db.PendingRegistrations.FirstOrDefault(x => x.ConfirmationToken == token);
+            if (pending == null || pending.ExpiresAtUtc < DateTime.UtcNow)
+            {
+                return new HttpStatusCodeResult(400);
+            }
+
+            if (userManager.FindByEmail(pending.Email) != null)
+            {
+                db.PendingRegistrations.Remove(pending);
+                db.SaveChanges();
+                return View("ConfirmEmail");
+            }
+
+            var user = new ApplicationUser { UserName = pending.Email, Email = pending.Email, EmailConfirmed = true };
+            var createResult = userManager.Create(user);
+            if (!createResult.Succeeded)
+            {
+                return new HttpStatusCodeResult(400);
+            }
+
+            user.PasswordHash = pending.PasswordHash;
+            db.SaveChanges();
+
+            if (!roleManager.RoleExists("User"))
+            {
+                roleManager.Create(new IdentityRole("User"));
+            }
+            userManager.AddToRole(user.Id, "User");
+
+            db.PendingRegistrations.Remove(pending);
+            db.SaveChanges();
+
+            await Task.CompletedTask;
+            return View("ConfirmEmail");
         }
 
         [HttpGet]
@@ -96,19 +167,17 @@ namespace Bazy_danych.Controllers
             return new HttpStatusCodeResult(400);
         }
 
-        // GET: Account/Login
         public ActionResult Login()
         {
             return View();
         }
 
-        // POST: Account/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
-            {   
+            {
                 var user = userManager.FindByEmail(model.Email);
                 if (user != null && !user.EmailConfirmed)
                 {
@@ -139,15 +208,12 @@ namespace Bazy_danych.Controllers
             return View(model);
         }
 
-        // GET: Account/LogOff
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return RedirectToAction("Index", "Home");
         }
 
-        // POST: Admin/AddUserToRole
-        // This is for admins to add an existing user to a role
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -167,7 +233,6 @@ namespace Bazy_danych.Controllers
             return RedirectToAction("ManageUsers", "Admin");
         }
 
-        // This is intentionally restricted so only an existing admin can create/assign admins.
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -207,8 +272,6 @@ namespace Bazy_danych.Controllers
             return new HttpStatusCodeResult(200, "Admin created or updated.");
         }
 
-        // POST: Admin/RemoveAdmin
-        // This is for admins to remove the admin role from a user
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -228,7 +291,6 @@ namespace Bazy_danych.Controllers
             return new HttpStatusCodeResult(200, "Admin role removed.");
         }
 
-        // Helper method to sign in user
         private async Task SignInAsync(ApplicationUser user, bool isPersistent)
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
@@ -237,7 +299,6 @@ namespace Bazy_danych.Controllers
             await Task.CompletedTask;
         }
 
-        // Helper method to add errors
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)
