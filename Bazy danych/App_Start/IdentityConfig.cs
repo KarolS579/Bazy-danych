@@ -8,13 +8,35 @@ namespace Bazy_danych
 {
     public class EmailService : IIdentityMessageService
     {
+        private static string GetRequiredAppSetting(string key)
+        {
+            var value = ConfigurationManager.AppSettings[key];
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ConfigurationErrorsException("Missing or empty app setting: " + key);
+            }
+
+            return value;
+        }
+
+        private static int GetRequiredAppSettingInt(string key)
+        {
+            var value = GetRequiredAppSetting(key);
+            if (!int.TryParse(value, out var parsedValue))
+            {
+                throw new ConfigurationErrorsException("Invalid integer app setting: " + key);
+            }
+
+            return parsedValue;
+        }
+
         public Task SendAsync(IdentityMessage message)
         {
-            var host = ConfigurationManager.AppSettings["MailtrapHost"];
-            var port = int.Parse(ConfigurationManager.AppSettings["MailtrapPort"]);
-            var user = ConfigurationManager.AppSettings["MailtrapUser"];
-            var pass = ConfigurationManager.AppSettings["MailtrapPass"];
-            var from = ConfigurationManager.AppSettings["MailtrapFrom"];
+            var host = GetRequiredAppSetting("MailtrapHost");
+            var port = GetRequiredAppSettingInt("MailtrapPort");
+            var user = GetRequiredAppSetting("MailtrapUser");
+            var pass = GetRequiredAppSetting("MailtrapPass");
+            var from = GetRequiredAppSetting("MailtrapFrom");
 
             var client = new SmtpClient(host, port)
             {
