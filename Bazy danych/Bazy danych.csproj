@@ -148,7 +148,6 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -161,12 +160,11 @@
     <Compile Include="Migrations\202605122319055_InitialIdentitySetup.Designer.cs">
       <DependentUpon>202605122319055_InitialIdentitySetup.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202605281500000_AddCreatedDateToApplicationUser.cs" />
+    <Compile Include="Migrations\202606101200000_AddSprzetTableAndCreatedDate.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
     <Compile Include="Models\Sprzet.cs" />
-    <Compile Include="Models\UserManagementViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -234,6 +232,8 @@
     <Content Include="Views\Admin\Panel.cshtml" />
     <Content Include="Views\Admin\Create.cshtml" />
     <Content Include="Views\Admin\Edit.cshtml" />
+    <Content Include="Views\Home\AddEquipment.cshtml" />
+    <Content Include="Views\Home\EditEquipment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

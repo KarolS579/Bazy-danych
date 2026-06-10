@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
@@ -33,7 +34,84 @@ namespace Bazy_danych.Controllers
 
         public ActionResult Equipment()
         {
-            return View();
+            var items = db.Sprzet.OrderByDescending(x => x.CreatedDate).ToList();
+            return View(items);
+        }
+
+        public ActionResult AddEquipment()
+        {
+            return View(new Sprzet());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddEquipment(Sprzet model)
+        {
+            if (ModelState.IsValid)
+            {
+                model.CreatedDate = DateTime.Now;
+                db.Sprzet.Add(model);
+                db.SaveChanges();
+                return RedirectToAction("Equipment");
+            }
+
+            return View(model);
+        }
+
+        public ActionResult EditEquipment(int? id)
+        {
+            if (!id.HasValue)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var item = db.Sprzet.Find(id.Value);
+            if (item == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(item);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditEquipment(Sprzet model)
+        {
+            if (ModelState.IsValid)
+            {
+                var item = db.Sprzet.Find(model.Id);
+                if (item == null)
+                {
+                    return HttpNotFound();
+                }
+
+                item.Nazwa = model.Nazwa;
+                item.Kategoria = model.Kategoria;
+                item.Cena_wynajmu = model.Cena_wynajmu;
+                item.Status = model.Status;
+
+                db.SaveChanges();
+                return RedirectToAction("Equipment");
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteEquipment(int id)
+        {
+            var item = db.Sprzet.Find(id);
+            if (item == null)
+            {
+                return HttpNotFound();
+            }
+
+            db.Sprzet.Remove(item);
+            db.SaveChanges();
+
+            return RedirectToAction("Equipment");
         }
 
         public ActionResult Warehouses()

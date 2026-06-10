@@ -22,8 +22,6 @@ namespace Bazy_danych.Models
             return new ApplicationDbContext();
         }
 
-        // Note: You shouldn't need the custom DbSet<User> anymore as IdentityUser handles it.
-        // If you have other DbSets (like Sprzet), add them here:
-        // public DbSet<Sprzet> Sprzets { get; set; }
+        public DbSet<Sprzet> Sprzet { get; set; }
     }
 }
