@@ -1,0 +1,22 @@
+@model Bazy_danych.Models.Klient
+
+@{
+    ViewBag.Title = "Usuń klienta";
+}
+
+<h2>Czy na pewno?</h2>
+
+<div class="mt-4 mb-3">
+    <strong>@Model.Imie @Model.Nazwisko</strong><br />
+    @if (!string.IsNullOrEmpty(Model.Firma))
+    {
+        <span>Firma: @Model.Firma</span>
+    }
+</div>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger">Usuń</button>
+    @Html.ActionLink("Anuluj", "Index", null, new { @class = "btn btn-secondary ms-2" })
+}

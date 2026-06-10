@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Bazy_danych.Models.Wynajem>
+
+@{
+    ViewBag.Title = "Rejestr Wynajmów";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("Zarejestruj nowy wynajem", "Create", null, new { @class = "btn btn-primary" })
+</p>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Klient</th>
+            <th>Wypożyczony sprzęt</th>
+            <th>Data wypożyczenia</th>
+            <th>Data zwrotu</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Klient.Nazwisko</td> 
+                <td>@item.Sprzet.Nazwa</td>    
+                <td>@item.DataWypozyczenia.ToShortDateString()</td>
+                <td>
+                    @(item.DataZwrotu.HasValue ? item.DataZwrotu.Value.ToShortDateString() : "Brak danych")
+                </td>
+                <td>
+                    @if (item.DataZwrotu.HasValue)
+                    {
+                        <span class="label label-success">Zwrócono</span>
+                    }
+                    else
+                    {
+                        <span class="label label-warning">W trakcie</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

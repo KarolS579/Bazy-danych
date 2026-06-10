@@ -138,6 +138,12 @@ namespace Bazy_danych.Controllers
             return View();
         }
 
+
+        public ActionResult Klienci()
+        {
+            return View();
+        }
+
         public ActionResult Rentals()
         {
             return View();

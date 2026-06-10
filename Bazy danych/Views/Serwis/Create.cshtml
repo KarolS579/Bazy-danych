@@ -1,0 +1,40 @@
+﻿@model Bazy_danych.Models.Serwis
+
+@{
+    ViewBag.Title = "Nowe Zgłoszenie Serwisowe";
+}
+
+<h2>Wyślij maszynę na serwis</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SprzetId, "Wybierz uszkodzony sprzęt", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("SprzetId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SprzetId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.OpisUsterki, "Opis objawów / usterki", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.OpisUsterki, new { @class = "form-control", rows = 4 })
+                @Html.ValidationMessageFor(model => model.OpisUsterki, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Zgłoś awarię" class="btn btn-danger" />
+                @Html.ActionLink("Powrót do rejestru", "Index", null, new { @class = "btn btn-default" })
+            </div>
+        </div>
+    </div>
+}
