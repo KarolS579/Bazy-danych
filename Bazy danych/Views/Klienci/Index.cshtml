@@ -1,0 +1,40 @@
+@model IEnumerable<Bazy_danych.Models.Klient>
+
+@{
+    ViewBag.Title = "Klienci";
+}
+
+<h2 class="mb-4">Klienci</h2>
+
+<p>
+    @Html.ActionLink("Dodaj klienta", "Create", null, new { @class = "btn btn-primary" })
+</p>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>Imie</th>
+            <th>Nazwisko</th>
+            <th>Telefon</th>
+            <th>Email</th>
+            <th>Firma</th>
+            <th>Akcje</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Imie</td>
+            <td>@item.Nazwisko</td>
+            <td>@item.Telefon</td>
+            <td>@item.Email</td>
+            <td>@item.Firma</td>
+            <td>
+                @Html.ActionLink("Edytuj", "Edit", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" })
+                @Html.ActionLink("Usuń", "Delete", new { id = item.Id }, new { @class = "btn btn-danger btn-sm ms-2" })
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

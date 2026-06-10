@@ -1,0 +1,18 @@
+﻿@* encoding: utf-8 *@
+@{
+    ViewBag.Title = "Wylogowanie";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm mt-4">
+            <div class="card-body p-4 text-center">
+                <h2 class="h4 mb-4">Pomyślnie się wylogowałeś</h2>
+                <p class="text-muted mb-3">Dziękujemy za odwiedzenie naszej aplikacji.</p>
+                <p>
+                    @Html.ActionLink("Wróć do strony głównie", "Index", "Home", null, new { @class = "btn btn-warning" })
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
