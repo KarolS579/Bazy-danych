@@ -9,7 +9,7 @@
         <div class="col-lg-8 mx-auto text-center">
             <h1 class="display-4 fw-bold mb-3">Witaj w BuildRent</h1>
             <p class="lead text-muted mb-4">Zarządzaj wynajmem i rezerwacją sprzętu budowlanego w jednym miejscu</p>
-            <a href="@Url.Action("Equipment", "Home")" class="btn btn-warning btn-lg fw-bold">Przeglądaj Sprzęt</a>
+            <a href="@Url.Action("Equipment", "Equipment")" class="btn btn-warning btn-lg fw-bold">Przeglądaj Sprzęt</a>
         </div>
     </div>
 
@@ -66,7 +66,7 @@
 
         <div class="col-md-6 col-lg-4 mb-4">
             <div class="card border-0 shadow-sm h-100 hover-card" style="cursor: pointer;">
-                <a href="@Url.Action("Warehouses", "Home")" style="text-decoration: none; color: inherit;">
+                <a href="@Url.Action("Warehouses", "Warehouse")" style="text-decoration: none; color: inherit;">
                     <div class="card-body text-center">
                         <div class="fs-1 mb-3">📦</div>
                         <h5 class="card-title fw-bold">Magazyny</h5>
@@ -79,7 +79,7 @@
 
         <div class="col-md-6 col-lg-4 mb-4">
             <div class="card border-0 shadow-sm h-100 hover-card" style="cursor: pointer;">
-                <a href="@Url.Action("Customers", "Home")" style="text-decoration: none; color: inherit;">
+                <a href="@Url.Action("Index", "Klienci")" style="text-decoration: none; color: inherit;">
                     <div class="card-body text-center">
                         <div class="fs-1 mb-3">👥</div>
                         <h5 class="card-title fw-bold">Klienci</h5>
@@ -92,10 +92,10 @@
 
         <div class="col-md-6 col-lg-4 mb-4">
             <div class="card border-0 shadow-sm h-100 hover-card" style="cursor: pointer;">
-                <a href="@Url.Action("Rentals", "Home")" style="text-decoration: none; color: inherit;">
+                <a href="@Url.Action("Index", "Wynajmy")" style="text-decoration: none; color: inherit;">
                     <div class="card-body text-center">
                         <div class="fs-1 mb-3">📅</div>
-                        <h5 class="card-title fw-bold">Wynajem i Rezerwacje</h5>
+                        <h5 class="card-title fw-bold">Wynajem</h5>
                         <p class="card-text text-muted">Zarządzaj wynajmami, rezerwacjami i umowami</p>
                         <span class="badge bg-primary">850 aktywnych</span>
                     </div>
@@ -105,7 +105,7 @@
 
         <div class="col-md-6 col-lg-4 mb-4">
             <div class="card border-0 shadow-sm h-100 hover-card" style="cursor: pointer;">
-                <a href="@Url.Action("Services", "Home")" style="text-decoration: none; color: inherit;">
+                <a href="@Url.Action("Index", "Serwis")" style="text-decoration: none; color: inherit;">
                     <div class="card-body text-center">
                         <div class="fs-1 mb-3">🔧</div>
                         <h5 class="card-title fw-bold">Serwis</h5>

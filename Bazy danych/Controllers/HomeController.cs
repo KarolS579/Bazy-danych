@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
@@ -31,17 +32,13 @@ namespace Bazy_danych.Controllers
             return View();
         }
 
-        public ActionResult Equipment()
-        {
-            return View();
-        }
-
-        public ActionResult Warehouses()
-        {
-            return View();
-        }
-
         public ActionResult Customers()
+        {
+            return View();
+        }
+
+
+        public ActionResult Klienci()
         {
             return View();
         }
@@ -71,3 +68,4 @@ namespace Bazy_danych.Controllers
         }
     }
 }
+

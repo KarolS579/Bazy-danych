@@ -1,0 +1,60 @@
+﻿@* encoding: utf-8 *@
+@model Bazy_danych.Models.Magazyn
+
+@{
+    ViewBag.Title = "Dodaj magazyn";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white fw-bold">
+                    Dodaj nowy magazyn
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("AddWarehouse", "Warehouse", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Nazwa, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Nazwa, new { @class = "form-control", placeholder = "np. Magazyn Główny" })
+                            @Html.ValidationMessageFor(m => m.Nazwa, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Lokalizacja, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Lokalizacja, new { @class = "form-control", placeholder = "np. Kraków" })
+                            @Html.ValidationMessageFor(m => m.Lokalizacja, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Pojemnosc, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Pojemnosc, new { @class = "form-control", type = "number", min = "1" })
+                            @Html.ValidationMessageFor(m => m.Pojemnosc, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.ZajeteMiejsce, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.ZajeteMiejsce, new { @class = "form-control", type = "number", min = "0" })
+                            @Html.ValidationMessageFor(m => m.ZajeteMiejsce, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Status, new { @class = "form-label" })
+                            @Html.DropDownListFor(m => m.Status, new SelectList(new[] { "Aktywny", "Przepełniony", "Nieaktywny" }), "Wybierz status", new { @class = "form-select" })
+                            @Html.ValidationMessageFor(m => m.Status, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-info fw-bold text-white">Zapisz magazyn</button>
+                            <a href="@Url.Action("Warehouses", "Warehouse")" class="btn btn-secondary">Anuluj</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

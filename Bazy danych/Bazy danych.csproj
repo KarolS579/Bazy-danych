@@ -148,8 +148,12 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\KlienciController.cs" />
+    <Compile Include="Controllers\SerwisController.cs" />
+    <Compile Include="Controllers\EquipmentController.cs" />
+    <Compile Include="Controllers\WarehouseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\WynajmyController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -161,12 +165,18 @@
     <Compile Include="Migrations\202605122319055_InitialIdentitySetup.Designer.cs">
       <DependentUpon>202605122319055_InitialIdentitySetup.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202605281500000_AddCreatedDateToApplicationUser.cs" />
+    <Compile Include="Migrations\202606101200000_AddSprzetTableAndCreatedDate.cs" />
+    <Compile Include="Migrations\202606101430000_AddMagazynTable.cs" />
+    <Compile Include="Migrations\202606101730000_AddPendingRegistrationTable.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
+    <Compile Include="Models\Klient.cs" />
+    <Compile Include="Models\Magazyn.cs" />
+    <Compile Include="Models\PendingRegistration.cs" />
+    <Compile Include="Models\Serwis.cs" />
     <Compile Include="Models\Sprzet.cs" />
-    <Compile Include="Models\UserManagementViewModel.cs" />
+    <Compile Include="Models\Wynajem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -229,11 +239,23 @@
     <Content Include="Views\Account\_RegisterForm.cshtml" />
     <Content Include="Views\Account\DisplayEmail.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
-    <Content Include="Views\Home\Equipment.cshtml" />
-    <Content Include="Views\Home\Warehouses.cshtml" />
+    <Content Include="Views\Equipment\Equipment.cshtml" />
+    <Content Include="Views\Warehouse\Warehouses.cshtml" />
     <Content Include="Views\Admin\Panel.cshtml" />
     <Content Include="Views\Admin\Create.cshtml" />
     <Content Include="Views\Admin\Edit.cshtml" />
+    <Content Include="Views\Equipment\AddEquipment.cshtml" />
+    <Content Include="Views\Equipment\EditEquipment.cshtml" />
+    <Content Include="Views\Warehouse\AddWarehouse.cshtml" />
+    <Content Include="Views\Warehouse\EditWarehouse.cshtml" />
+    <Content Include="Views\Klienci\Create.cshtml" />
+    <Content Include="Views\Klienci\Delete.cshtml" />
+    <Content Include="Views\Klienci\Edit.cshtml" />
+    <Content Include="Views\Klienci\Index.cshtml" />
+    <Content Include="Views\Serwis\Create.cshtml" />
+    <Content Include="Views\Serwis\Index.cshtml" />
+    <Content Include="Views\Wynajmy\Create.cshtml" />
+    <Content Include="Views\Wynajmy\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

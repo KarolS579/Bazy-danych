@@ -10,7 +10,8 @@ namespace Bazy_danych.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
             ContextKey = "Bazy_danych.Models.ApplicationDbContext";
         }
 

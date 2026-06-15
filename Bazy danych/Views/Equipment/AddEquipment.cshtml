@@ -1,0 +1,54 @@
+﻿@* encoding: utf-8 *@
+@model Bazy_danych.Models.Sprzet
+
+@{
+    ViewBag.Title = "Dodaj sprzęt";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark fw-bold">
+                    Dodaj nowy sprzęt
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("AddEquipment", "Equipment", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Nazwa, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Nazwa, new { @class = "form-control", placeholder = "np. Koparka CAT 320" })
+                            @Html.ValidationMessageFor(m => m.Nazwa, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Kategoria, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Kategoria, new { @class = "form-control", placeholder = "np. Maszyny ciężkie" })
+                            @Html.ValidationMessageFor(m => m.Kategoria, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Cena_wynajmu, "Cena wynajmu (PLN/doba)", new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Cena_wynajmu, new { @class = "form-control", type = "number", step = "0.01", min = "0.01" })
+                            @Html.ValidationMessageFor(m => m.Cena_wynajmu, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Status, new { @class = "form-label" })
+                            @Html.DropDownListFor(m => m.Status, (SelectList)ViewBag.Statuses, "Wybierz status", new { @class = "form-select" })
+                            @Html.ValidationMessageFor(m => m.Status, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning fw-bold">Zapisz sprzęt</button>
+                            <a href="@Url.Action("Equipment", "Equipment")" class="btn btn-secondary">Anuluj</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

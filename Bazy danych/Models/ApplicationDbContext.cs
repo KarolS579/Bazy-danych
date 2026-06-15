@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data.Entity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
@@ -22,8 +22,8 @@ namespace Bazy_danych.Models
             return new ApplicationDbContext();
         }
 
-        // Note: You shouldn't need the custom DbSet<User> anymore as IdentityUser handles it.
-        // If you have other DbSets (like Sprzet), add them here:
-        // public DbSet<Sprzet> Sprzets { get; set; }
+        public DbSet<Sprzet> Sprzet { get; set; }
+        public DbSet<Magazyn> Magazyny { get; set; }
+        public DbSet<PendingRegistration> PendingRegistrations { get; set; }
     }
 }

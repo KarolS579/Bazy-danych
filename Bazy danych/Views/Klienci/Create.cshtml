@@ -1,0 +1,46 @@
+@model Bazy_danych.Models.Klient
+
+@{
+    ViewBag.Title = "Dodaj klienta";
+}
+
+<h2 class="mb-4">@ViewBag.Title</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Imie)
+        @Html.TextBoxFor(m => m.Imie, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Imie, "", new { @class = "text-danger" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Nazwisko)
+        @Html.TextBoxFor(m => m.Nazwisko, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Nazwisko, "", new { @class = "text-danger" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Telefon)
+        @Html.TextBoxFor(m => m.Telefon, new { @class = "form-control" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Email)
+        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Adres)
+        @Html.TextBoxFor(m => m.Adres, new { @class = "form-control" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Firma)
+        @Html.TextBoxFor(m => m.Firma, new { @class = "form-control" })
+    </div>
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Uwagi)
+        @Html.TextAreaFor(m => m.Uwagi, new { @class = "form-control" })
+    </div>
+
+    <button type="submit" class="btn btn-success">Zapisz</button>
+    @Html.ActionLink("Anuluj", "Index", null, new { @class = "btn btn-secondary ms-2" })
+}
