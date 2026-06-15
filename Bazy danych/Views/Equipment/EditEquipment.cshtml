@@ -13,7 +13,7 @@
                     Edytuj sprzęt
                 </div>
                 <div class="card-body">
-                    @using (Html.BeginForm("EditEquipment", "Home", FormMethod.Post))
+                    @using (Html.BeginForm("EditEquipment", "Equipment", FormMethod.Post))
                     {
                         @Html.AntiForgeryToken()
                         @Html.HiddenFor(m => m.Id)
@@ -45,7 +45,7 @@
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary fw-bold">Zapisz zmiany</button>
-                            <a href="@Url.Action("Equipment", "Home")" class="btn btn-secondary">Anuluj</a>
+                            <a href="@Url.Action("Equipment", "Equipment")" class="btn btn-secondary">Anuluj</a>
                         </div>
                     }
                 </div>

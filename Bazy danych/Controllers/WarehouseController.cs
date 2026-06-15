@@ -27,6 +27,18 @@ namespace Bazy_danych.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddWarehouse(Magazyn model)
         {
+            if (ModelState["ZajeteMiejsce"] != null && ModelState["ZajeteMiejsce"].Errors.Count > 0)
+            {
+                ModelState["ZajeteMiejsce"].Errors.Clear();
+                ModelState.AddModelError("ZajeteMiejsce", "Wprowadzona pojemność jest zbyt duża lub nieprawidłowa! Maksymalna liczba to 2147483647");
+            }
+
+            if (ModelState["Pojemnosc"] != null && ModelState["Pojemnosc"].Errors.Count > 0)
+            {
+                ModelState["Pojemnosc"].Errors.Clear();
+                ModelState.AddModelError("Pojemnosc", "Wprowadzona pojemność jest zbyt duża lub nieprawidłowa! Maksymalna liczba to 2147483647");
+            }
+
             if (ModelState.IsValid)
             {
                 if (model.ZajeteMiejsce > model.Pojemnosc)
@@ -64,6 +76,18 @@ namespace Bazy_danych.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditWarehouse(Magazyn model)
         {
+            if (ModelState["ZajeteMiejsce"] != null && ModelState["ZajeteMiejsce"].Errors.Count > 0)
+            {
+                ModelState["ZajeteMiejsce"].Errors.Clear();
+                ModelState.AddModelError("ZajeteMiejsce", "Wprowadzona pojemność jest zbyt duża lub nieprawidłowa! Maksymalna liczba to 2147483647");
+            }
+
+            if (ModelState["Pojemnosc"] != null && ModelState["Pojemnosc"].Errors.Count > 0)
+            {
+                ModelState["Pojemnosc"].Errors.Clear();
+                ModelState.AddModelError("Pojemnosc", "Wprowadzona pojemność jest zbyt duża lub nieprawidłowa! Maksymalna liczba to 2147483647");
+            }
+
             if (ModelState.IsValid)
             {
                 if (model.ZajeteMiejsce > model.Pojemnosc)

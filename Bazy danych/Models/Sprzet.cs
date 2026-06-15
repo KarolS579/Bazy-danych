@@ -11,10 +11,12 @@ namespace Bazy_danych.Models
         public int Id { get; set; }
 
         [Required]
+        [MaxLength(256)]
         [Display(Name = "Nazwa")]
         public string Nazwa { get; set; }
 
         [Required]
+        [MaxLength(256)]
         [Display(Name = "Kategoria")]
         public string Kategoria { get; set; }
 
