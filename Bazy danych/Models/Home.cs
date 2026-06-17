@@ -6,5 +6,6 @@
         public int TotalWarehouses { get; set; }
         public int TotalClients { get; set; }
         public int ActiveRentals { get; set; }
+        public int TotalInService { get; set; }
     }
 }

@@ -16,14 +16,24 @@ namespace Bazy_danych.Controllers
 
         public ActionResult Index()
         {
+            // Make sure your database context matches your model names
             var stats = new Home
             {
+                // 1. Total number of equipment pieces in the system
                 TotalEquipment = db.Sprzet.Count(),
-                TotalWarehouses = db.Magazyny.Count(),
+
+                // 2. Count ONLY items where the status string is exactly "Wynajęty"
+                ActiveRentals = db.Sprzet.Count(s => s.Status == "Wynajęty"),
+
+                // 3. Count ONLY items where the status string is exactly "W serwisie"
+                TotalInService = db.Sprzet.Count(s => s.Status == "Serwis"),
+
+                // 4. Total number of active clients
                 TotalClients = db.Klienci.Count(),
+
+                TotalWarehouses = db.Magazyny.Count()
             };
 
-            // 3. Pass the stats model directly into the View
             return View(stats);
         }
 
