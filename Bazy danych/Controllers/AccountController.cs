@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -167,8 +167,17 @@ namespace Bazy_danych.Controllers
             return new HttpStatusCodeResult(400);
         }
 
-        public ActionResult Login()
+        // GET: /Account/Login
+        [AllowAnonymous]
+        public ActionResult Login(string returnUrl)
         {
+            // If a returnUrl exists, it means they were kicked out from a page they were actively viewing
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                ViewBag.SessionExpiredMessage = "Twoja sesja wygasła ze względów bezpieczeństwa. Zaloguj się ponownie.";
+            }
+
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 

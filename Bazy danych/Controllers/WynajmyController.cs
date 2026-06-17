@@ -7,6 +7,7 @@ using Bazy_danych.Models;
 
 namespace Bazy_danych.Controllers
 {
+    [Authorize]
     public class WynajmyController : Controller
     {
         // STATYCZNE LISTY - Nasz tymczasowy magazyn dla wynajmów, klientów i sprzętu

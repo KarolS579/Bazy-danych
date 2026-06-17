@@ -6,6 +6,7 @@ using Bazy_danych.Models;
 
 namespace Bazy_danych.Controllers
 {
+    [Authorize]
     public class KlienciController : Controller
     {
         // This is your live bridge to the database

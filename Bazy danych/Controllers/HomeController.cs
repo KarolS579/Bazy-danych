@@ -6,6 +6,7 @@ using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
 using Bazy_danych.Models;
+using Bazy_Danych.Models;
 
 namespace Bazy_danych.Controllers
 {
@@ -15,7 +16,15 @@ namespace Bazy_danych.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            var stats = new Home
+            {
+                TotalEquipment = db.Sprzet.Count(),
+                TotalWarehouses = db.Magazyny.Count(),
+                TotalClients = db.Klienci.Count(),
+            };
+
+            // 3. Pass the stats model directly into the View
+            return View(stats);
         }
 
         public ActionResult About()
