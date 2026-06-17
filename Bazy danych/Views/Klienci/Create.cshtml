@@ -1,46 +1,71 @@
+﻿@* encoding: utf-8 *@
 @model Bazy_danych.Models.Klient
-
 @{
     ViewBag.Title = "Dodaj klienta";
 }
 
-<h2 class="mb-4">@ViewBag.Title</h2>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white fw-bold">
+                    Dodaj nowego klienta
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("Create", "Klienci", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Imie, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Imie, new { @class = "form-control", placeholder = "np. Jan" })
+                            @Html.ValidationMessageFor(m => m.Imie, "", new { @class = "text-danger small" })
+                        </div>
 
-    <div class="mb-3">
-        @Html.LabelFor(m => m.Imie)
-        @Html.TextBoxFor(m => m.Imie, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Imie, "", new { @class = "text-danger" })
-    </div>
-    <div class="mb-3">
-        @Html.LabelFor(m => m.Nazwisko)
-        @Html.TextBoxFor(m => m.Nazwisko, new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Nazwisko, "", new { @class = "text-danger" })
-    </div>
-    <div class="mb-3">
-        @Html.LabelFor(m => m.Telefon)
-        @Html.TextBoxFor(m => m.Telefon, new { @class = "form-control" })
-    </div>
-    <div class="mb-3">
-        @Html.LabelFor(m => m.Email)
-        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-    </div>
-    <div class="mb-3">
-        @Html.LabelFor(m => m.Adres)
-        @Html.TextBoxFor(m => m.Adres, new { @class = "form-control" })
-    </div>
-    <div class="mb-3">
-        @Html.LabelFor(m => m.Firma)
-        @Html.TextBoxFor(m => m.Firma, new { @class = "form-control" })
-    </div>
-    <div class="mb-3">
-        @Html.LabelFor(m => m.Uwagi)
-        @Html.TextAreaFor(m => m.Uwagi, new { @class = "form-control" })
-    </div>
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Nazwisko, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Nazwisko, new { @class = "form-control", placeholder = "np. Kowalski" })
+                            @Html.ValidationMessageFor(m => m.Nazwisko, "", new { @class = "text-danger small" })
+                        </div>
 
-    <button type="submit" class="btn btn-success">Zapisz</button>
-    @Html.ActionLink("Anuluj", "Index", null, new { @class = "btn btn-secondary ms-2" })
-}
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Telefon, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Telefon, new { @class = "form-control", placeholder = "np. +48 123 456 789" })
+                            @Html.ValidationMessageFor(m => m.Telefon, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Email, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email", placeholder = "np. jan.kowalski@email.com" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Adres, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Adres, new { @class = "form-control", placeholder = "np. ul. Bracka 15, Kraków" })
+                            @Html.ValidationMessageFor(m => m.Adres, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Firma, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Firma, new { @class = "form-control", placeholder = "Nazwa firmy (opcjonalnie)" })
+                            @Html.ValidationMessageFor(m => m.Firma, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(m => m.Uwagi, new { @class = "form-label" })
+                            @Html.TextAreaFor(m => m.Uwagi, new { @class = "form-control", rows = "3", placeholder = "Dodatkowe uwagi dotyczące klienta..." })
+                            @Html.ValidationMessageFor(m => m.Uwagi, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-info fw-bold text-white">Zapisz klienta</button>
+                            <a href="@Url.Action("Index", "Klienci")" class="btn btn-secondary">Anuluj</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

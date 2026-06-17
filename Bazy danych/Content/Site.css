@@ -6,15 +6,119 @@
 }
 
 /* Override the default bootstrap behavior where horizontal description lists 
-   will truncate terms that are too long to fit in the left column 
-*/
+   will truncate terms that are too long to fit in the left column */
 .dl-horizontal dt {
     white-space: normal;
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
-input,
-select,
-textarea {
-    max-width: 280px;
+/* ==========================================================================
+   1. GLOBAL & LAYOUT CONFIGURATION
+   ========================================================================== */
+body {
+    background-color: #f8f9fa;
 }
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    margin-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override description list truncation terms */
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Constrain default form element widths */
+input, select, textarea {
+    max-width: 100%px;
+}
+
+footer {
+    margin-top: 50px;
+    padding: 20px 0;
+    border-top: 1px solid #dee2e6;
+    color: #6c757d;
+}
+
+/* ==========================================================================
+   2. NAVIGATION HOVER EFFECTS (ORANGE SHOOTING BARS)
+   ========================================================================== */
+
+/* --- The Logo (BuildRent) --- */
+.navbar-brand {
+    font-weight: bold;
+    color: #ffc107 !important; /* Yellow construction base color */
+    position: relative; /* Anchors the pseudo-element position grid */
+    display: inline-block;
+    padding-bottom: 5px; /* Gap between logo text and animated line */
+}
+
+    .navbar-brand::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0; /* Hidden by default */
+        height: 3px; /* Thickness of the logo accent line */
+        background-color: #fd7e14; /* Construction Orange */
+        transition: width 0.3s ease-in-out; /* Speed and curve of animation */
+    }
+
+    .navbar-brand:hover::after {
+        width: 100%; /* Expands bar fully from left to right */
+    }
+
+/* --- The Menu Links (Sprzęt, Magazyny, Klienci, etc.) --- */
+.navbar-nav .nav-link {
+    position: relative;
+    padding-bottom: 6px !important; /* Creates equal vertical spacing for the line */
+    transition: color 0.2s ease;
+}
+
+    .navbar-nav .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0; /* Hidden by default */
+        height: 2px; /* Slightly thinner line than logo for balance */
+        background-color: #fd7e14; /* Construction Orange */
+        transition: width 0.25s ease-in-out;
+    }
+
+    .navbar-nav .nav-link:hover::after {
+        width: 100%; /* Shoots menu line horizontally from left to right */
+    }
+
+    .navbar-nav .nav-link:hover {
+        color: #ffffff !important; /* Slightly brightens text color when active */
+    }
+
+/* ==========================================================================
+   3. CUSTOM ACTION BUTTONS (IDLE BLACK -> HOVER YELLOW)
+   ========================================================================== */
+a.my-custom-btn, .my-custom-btn {
+    display: inline-block !important;
+    background-color: #000000 !important; /* Base color solid black */
+    color: #ffffff !important; /* High contrast white text */
+    border: 2px solid #000000 !important; /* Sharp black border perimeter */
+    padding: 6px 12px !important; /* Restores native component box spacing */
+    border-radius: 4px !important; /* Smooth clean border curve */
+    text-decoration: none !important; /* Removes system text-hyperlink underline */
+    transition: background-color 0.2s ease, color 0.2s ease !important; /* Fade transitions */
+}
+
+    /* Hover State definition */
+    a.my-custom-btn:hover, .my-custom-btn:hover {
+        background-color: #ffc107 !important; /* Background turns construction yellow */
+        border-color: #000000 !important; /* Border remains crisp black */
+        color: #000000 !important; /* Font flips to black for accessibility */
+    }
+
+    /* --- Disable the orange line effect for specific links --- */
+    .navbar-nav .nav-link.no-underline::after,
+    .navbar-brand.no-underline::after {
+        display: none !important; /* Hides the animated bar completely */
+    }
