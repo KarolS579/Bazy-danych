@@ -9,6 +9,7 @@ using Bazy_danych.Models;
 
 namespace Bazy_danych.Controllers
 {
+    [Authorize]
     public class WarehouseController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();

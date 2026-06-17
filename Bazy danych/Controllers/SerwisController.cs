@@ -7,6 +7,7 @@ using Bazy_danych.Models;
 
 namespace Bazy_danych.Controllers
 {
+    [Authorize]
     public class SerwisController : Controller
     {
         // Korzystamy z tej samej listy sprzętów, która była w Wynajmach

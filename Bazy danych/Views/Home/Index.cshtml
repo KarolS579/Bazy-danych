@@ -1,24 +1,22 @@
-﻿@* encoding: utf-8 *@
+﻿@model Bazy_Danych.Models.Home
 @{
     ViewBag.Title = "Strona główna";
 }
 
 <div class="container mt-5">
-    <!-- Hero Section -->
     <div class="row mb-5">
         <div class="col-lg-8 mx-auto text-center">
             <h1 class="display-4 fw-bold mb-3">Witaj w BuildRent</h1>
             <p class="lead text-muted mb-4">Zarządzaj wynajmem i rezerwacją sprzętu budowlanego w jednym miejscu</p>
-            <a href="@Url.Action("Equipment", "Equipment")" class="btn btn-warning btn-lg fw-bold">Przeglądaj Sprzęt</a>
+            <a href="@Url.Action("Equipment", "Equipment")" class="my-custom-btn btn-lg fw-bold px-4 py-2">Przeglądaj Sprzęt</a>
         </div>
     </div>
 
-    <!-- Quick Stats Section -->
     <div class="row mb-5">
         <div class="col-md-3 mb-3">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body text-center">
-                    <h3 class="display-6 fw-bold text-warning">1,250</h3>
+                    <h3 class="display-6 fw-bold text-warning">@Model.TotalEquipment</h3>
                     <p class="text-muted">Dostępne urządzenia</p>
                 </div>
             </div>
@@ -26,7 +24,7 @@
         <div class="col-md-3 mb-3">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body text-center">
-                    <h3 class="display-6 fw-bold text-success">850</h3>
+                    <h3 class="display-6 fw-bold text-success">@Model.ActiveRentals</h3>
                     <p class="text-muted">Wynajęte</p>
                 </div>
             </div>
@@ -34,7 +32,7 @@
         <div class="col-md-3 mb-3">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body text-center">
-                    <h3 class="display-6 fw-bold text-info">45</h3>
+                    <h3 class="display-6 fw-bold text-info">@Model.TotalInService</h3>
                     <p class="text-muted">W serwisie</p>
                 </div>
             </div>
@@ -42,23 +40,21 @@
         <div class="col-md-3 mb-3">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body text-center">
-                    <h3 class="display-6 fw-bold text-primary">380</h3>
+                    <h3 class="display-6 fw-bold text-primary">@Model.TotalClients</h3>
                     <p class="text-muted">Klienci aktywni</p>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Navigation Cards Section -->
     <div class="row">
         <div class="col-md-6 col-lg-4 mb-4">
             <div class="card border-0 shadow-sm h-100 hover-card" style="cursor: pointer;">
-                <a href="@Url.Action("Equipment", "Home")" style="text-decoration: none; color: inherit;">
+                <a href="@Url.Action("Equipment", "Equipment")" style="text-decoration: none; color: inherit;">
                     <div class="card-body text-center">
                         <div class="fs-1 mb-3">🏗️</div>
                         <h5 class="card-title fw-bold">Sprzęt</h5>
                         <p class="card-text text-muted">Zarządzaj inwentarzem sprzętu budowlanego i jego dostępnością</p>
-                        <span class="badge bg-warning text-dark">17 kategorii</span>
+                        <span class="badge bg-warning text-dark">@Model.TotalEquipment sztuk</span>
                     </div>
                 </a>
             </div>
@@ -71,7 +67,7 @@
                         <div class="fs-1 mb-3">📦</div>
                         <h5 class="card-title fw-bold">Magazyny</h5>
                         <p class="card-text text-muted">Monitoruj lokalizację i stan sprzętu w magazynach</p>
-                        <span class="badge bg-info">12 lokalizacji</span>
+                        <span class="badge bg-info">@Model.TotalWarehouses lokalizacji</span>
                     </div>
                 </a>
             </div>
@@ -84,7 +80,7 @@
                         <div class="fs-1 mb-3">👥</div>
                         <h5 class="card-title fw-bold">Klienci</h5>
                         <p class="card-text text-muted">Zarządzaj bazą klientów i ich historią wynajmów</p>
-                        <span class="badge bg-success">380 klientów</span>
+                        <span class="badge bg-success">@Model.TotalClients aktywnych</span>
                     </div>
                 </a>
             </div>
@@ -97,7 +93,7 @@
                         <div class="fs-1 mb-3">📅</div>
                         <h5 class="card-title fw-bold">Wynajem</h5>
                         <p class="card-text text-muted">Zarządzaj wynajmami, rezerwacjami i umowami</p>
-                        <span class="badge bg-primary">850 aktywnych</span>
+                        <span class="badge bg-primary">@Model.ActiveRentals w terenie</span>
                     </div>
                 </a>
             </div>
@@ -110,7 +106,7 @@
                         <div class="fs-1 mb-3">🔧</div>
                         <h5 class="card-title fw-bold">Serwis</h5>
                         <p class="card-text text-muted">Śledź konserwację i naprawy sprzętu</p>
-                        <span class="badge bg-danger">45 w trakcie</span>
+                        <span class="badge bg-danger">@Model.TotalInService w naprawie</span>
                     </div>
                 </a>
             </div>
@@ -122,12 +118,12 @@
     .hover-card {
         transition: box-shadow 0.3s ease;
     }
-    
-    .hover-card:hover {
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    }
 
-    .hover-card a {
-        text-decoration: none !important;
-    }
-</style></style>
+        .hover-card:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .hover-card a {
+            text-decoration: none !important;
+        }
+</style>

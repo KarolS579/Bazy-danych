@@ -6,6 +6,7 @@ using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
 using Bazy_danych.Models;
+using Bazy_Danych.Models;
 
 namespace Bazy_danych.Controllers
 {
@@ -15,7 +16,25 @@ namespace Bazy_danych.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            // Make sure your database context matches your model names
+            var stats = new Home
+            {
+                // 1. Total number of equipment pieces in the system
+                TotalEquipment = db.Sprzet.Count(),
+
+                // 2. Count ONLY items where the status string is exactly "Wynajęty"
+                ActiveRentals = db.Sprzet.Count(s => s.Status == "Wynajęty"),
+
+                // 3. Count ONLY items where the status string is exactly "W serwisie"
+                TotalInService = db.Sprzet.Count(s => s.Status == "Serwis"),
+
+                // 4. Total number of active clients
+                TotalClients = db.Klienci.Count(),
+
+                TotalWarehouses = db.Magazyny.Count()
+            };
+
+            return View(stats);
         }
 
         public ActionResult About()
