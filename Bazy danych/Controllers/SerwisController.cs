@@ -1,76 +1,85 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
-using System.Web;
+using System.Net;
 using System.Web.Mvc;
 using Bazy_danych.Models;
 
 namespace Bazy_danych.Controllers
 {
     [Authorize]
-    public class SerwisController : Controller
+    public class SerwisyController : Controller
     {
-        // Korzystamy z tej samej listy sprzętów, która była w Wynajmach
-        private static List<Sprzet> sztucznySprzet = new List<Sprzet>()
-        {
-            new Sprzet { Id = 1, Nazwa = "Wiertarka udarowa Bosch" },
-            new Sprzet { Id = 2, Nazwa = "Zagęszczarka do gruntu" }
-        };
+        private ApplicationDbContext db = new ApplicationDbContext();
 
-        // Statyczna lista zgłoszeń serwisowych działająca "na sucho"
-        private static List<Serwis> makietaSerwisu = new List<Serwis>()
-        {
-            new Serwis
-            {
-                Id = 1,
-                OpisUsterki = "Wymiana szczotek węglowych i kabla zasilającego",
-                DataZgloszenia = DateTime.Now.AddDays(-4),
-                Koszt = 120.00m,
-                Status = "Naprawiono",
-                SprzetId = 1,
-                Sprzet = sztucznySprzet[0]
-            },
-            new Serwis
-            {
-                Id = 2,
-                OpisUsterki = "Silnik gaśnie pod obciążeniem - czyszczenie gaźnika",
-                DataZgloszenia = DateTime.Now,
-                Koszt = null,
-                Status = "W diagnozie",
-                SprzetId = 2,
-                Sprzet = sztucznySprzet[1]
-            }
-        };
-
+  
         public ActionResult Index()
         {
-            return View(makietaSerwisu);
+            var serwisy = db.Serwisy.Include(s => s.Sprzet).ToList();
+            return View(serwisy);
         }
 
+     
         public ActionResult Create()
         {
-            ViewBag.SprzetId = new SelectList(sztucznySprzet, "Id", "Nazwa");
+           
+            ViewBag.SprzetId = new SelectList(db.Sprzets.Where(s => s.Status == "Dostępny"), "Id", "Nazwa");
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Serwis serwis)
+        public ActionResult Create([Bind(Include = "Id,DataRozpoczecia,Opis,SprzetId")] Serwis serwis)
         {
             if (ModelState.IsValid)
             {
-                serwis.Id = makietaSerwisu.Count > 0 ? makietaSerwisu.Max(s => s.Id) + 1 : 1;
-                serwis.DataZgloszenia = DateTime.Now;
-                serwis.Status = "W diagnozie";
+                var sprzet = db.Sprzets.Find(serwis.SprzetId);
 
-                serwis.Sprzet = sztucznySprzet.FirstOrDefault(s => s.Id == serwis.SprzetId);
+                if (sprzet != null && sprzet.Status == "Dostępny")
+                {
+                    sprzet.Status = "Serwis"; 
+                    db.Entry(sprzet).State = EntityState.Modified;
 
-                makietaSerwisu.Add(serwis);
-                return RedirectToAction("Index");
+                    db.Serwisy.Add(serwis);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Ten sprzęt nie jest dostępny i nie może zostać wysłany na serwis.");
+                }
             }
 
-            ViewBag.SprzetId = new SelectList(sztucznySprzet, "Id", "Nazwa", serwis.SprzetId);
+            ViewBag.SprzetId = new SelectList(db.Sprzets.Where(s => s.Status == "Dostępny"), "Id", "Nazwa", serwis.SprzetId);
             return View(serwis);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult PowrotZSerwisu(int id)
+        {
+            var serwis = db.Serwisy.Find(id);
+            if (serwis != null)
+            {
+                var sprzet = db.Sprzets.Find(serwis.SprzetId);
+                if (sprzet != null)
+                {
+                    sprzet.Status = "Dostępny"; 
+                    db.Entry(sprzet).State = EntityState.Modified;
+                }
+
+                serwis.DataZakonczenia = DateTime.Now;
+                db.Entry(serwis).State = EntityState.Modified;
+
+                db.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

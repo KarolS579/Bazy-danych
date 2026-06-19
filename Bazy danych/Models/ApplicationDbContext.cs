@@ -13,7 +13,9 @@ namespace Bazy_danych.Models
     // 2. Inherit from IdentityDbContext to get all the built-in security tables
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext() : base("DefaultConnection", throwIfV1Schema: false) 
+        // ZMIANA: Wpisanie bezpośrednich parametrów połączenia do Twojej bazy w SSMS z pominięciem Web.config
+        public ApplicationDbContext()
+            : base(@"Data Source=.;Initial Catalog=BazyDanychDB (1);Integrated Security=True;Encrypt=False;TrustServerCertificate=True;", throwIfV1Schema: false)
         {
         }
 
@@ -22,9 +24,11 @@ namespace Bazy_danych.Models
             return new ApplicationDbContext();
         }
 
-        public DbSet<Sprzet> Sprzet { get; set; }
+        public DbSet<Sprzet> Sprzets { get; set; }
         public DbSet<Magazyn> Magazyny { get; set; }
         public DbSet<Klient> Klienci { get; set; }
         public DbSet<PendingRegistration> PendingRegistrations { get; set; }
+        public DbSet<Wynajem> Wynajmy { get; set; }
+        public DbSet<Serwis> Serwisy { get; set; }
     }
 }

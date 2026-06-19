@@ -8,12 +8,12 @@ namespace Bazy_danych.Models
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(256)]
+        [MaxLength(20)]
         [Display(Name = "Nazwa magazynu")]
         public string Nazwa { get; set; }
 
         [Required]
-        [MaxLength(256)]
+        [MaxLength(20)]
         [Display(Name = "Lokalizacja")]
         public string Lokalizacja { get; set; }
 

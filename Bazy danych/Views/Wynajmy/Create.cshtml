@@ -4,7 +4,7 @@
     ViewBag.Title = "Nowy Wynajem";
 }
 
-<h2>Zarejestruj nowy wynajem</h2>
+<h2>Zapisz nowy wynajem sprzętu</h2>
 
 @using (Html.BeginForm())
 {
@@ -15,33 +15,41 @@
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
         <div class="form-group">
-            @Html.LabelFor(model => model.KlientId, "Wybierz klienta", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.KlientId, "Klient", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("KlientId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownList("KlientId", null, "-- Wybierz Klienta --", htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.KlientId, "", new { @class = "text-danger" })
             </div>
         </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.SprzetId, "Wybierz sprzęt", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="form-group mt-3">
+            @Html.LabelFor(model => model.SprzetId, "Sprzęt", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("SprzetId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownList("SprzetId", null, "-- Wybierz Sprzęt --", htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.SprzetId, "", new { @class = "text-danger" })
             </div>
         </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.DataWypozyczenia, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="form-group mt-3">
+            @Html.LabelFor(model => model.DataWynajmu, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.DataWypozyczenia, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.DataWypozyczenia, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.DataWynajmu, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                @Html.ValidationMessageFor(model => model.DataWynajmu, "", new { @class = "text-danger" })
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group mt-3">
+            @Html.LabelFor(model => model.DataZwrotu, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DataZwrotu, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                @Html.ValidationMessageFor(model => model.DataZwrotu, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group mt-4">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Zapisz w bazie" class="btn btn-success" />
-                @Html.ActionLink("Powrót do listy", "Index", null, new { @class = "btn btn-default" })
+                <input type="submit" value="Zatwierdź wynajem" class="btn btn-success" />
+                @Html.ActionLink("Powrót do listy", "Index", null, new { @class = "btn btn-secondary" })
             </div>
         </div>
     </div>

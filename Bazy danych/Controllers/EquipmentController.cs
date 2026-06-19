@@ -16,7 +16,7 @@ namespace Bazy_danych.Controllers
         private static readonly string[] EquipmentStatuses = new[] { "Dostępny", "Wynajęty", "Serwis" };
         public ActionResult Equipment()
         {
-            var items = db.Sprzet.OrderByDescending(x => x.CreatedDate).ToList();
+            var items = db.Sprzets.OrderByDescending(x => x.CreatedDate).ToList();
             return View(items);
         }
 
@@ -40,7 +40,7 @@ namespace Bazy_danych.Controllers
             if (ModelState.IsValid)
             {
                 model.CreatedDate = DateTime.Now;
-                db.Sprzet.Add(model);
+                db.Sprzets.Add(model);
                 db.SaveChanges();
                 return RedirectToAction("Equipment");
             }
@@ -56,7 +56,7 @@ namespace Bazy_danych.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var item = db.Sprzet.Find(id.Value);
+            var item = db.Sprzets.Find(id.Value);
             if (item == null)
             {
                 return HttpNotFound();
@@ -79,7 +79,7 @@ namespace Bazy_danych.Controllers
 
             if (ModelState.IsValid)
             {
-                var item = db.Sprzet.Find(model.Id);
+                var item = db.Sprzets.Find(model.Id);
                 if (item == null)
                 {
                     return HttpNotFound();
@@ -102,13 +102,13 @@ namespace Bazy_danych.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteEquipment(int id)
         {
-            var item = db.Sprzet.Find(id);
+            var item = db.Sprzets.Find(id);
             if (item == null)
             {
                 return HttpNotFound();
             }
 
-            db.Sprzet.Remove(item);
+            db.Sprzets.Remove(item);
             db.SaveChanges();
 
             return RedirectToAction("Equipment");

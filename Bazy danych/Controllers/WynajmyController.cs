@@ -1,74 +1,107 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
-using System.Web;
+using System.Net;
 using System.Web.Mvc;
 using Bazy_danych.Models;
 
 namespace Bazy_danych.Controllers
 {
-    [Authorize]
+    [Authorize] // Opcjonalnie: dostęp tylko dla zalogowanych pracowników/adminów
     public class WynajmyController : Controller
     {
-        // STATYCZNE LISTY - Nasz tymczasowy magazyn dla wynajmów, klientów i sprzętu
-        private static List<Klient> sztuczniKlienci = new List<Klient>()
-        {
-            new Klient { Id = 1, Nazwisko = "Jan Kowalski" },
-            new Klient { Id = 2, Nazwisko = "Piotr Nowak - Firma" }
-        };
+        private ApplicationDbContext db = new ApplicationDbContext();
 
-        private static List<Sprzet> sztucznySprzet = new List<Sprzet>()
-        {
-            new Sprzet { Id = 1, Nazwa = "Wiertarka udarowa Bosch" },
-            new Sprzet { Id = 2, Nazwa = "Zagęszczarka do gruntu" }
-        };
-
-        private static List<Wynajem> makietaWynajmow = new List<Wynajem>()
-        {
-            new Wynajem
-            {
-                Id = 1,
-                DataWypozyczenia = DateTime.Now.AddDays(-7),
-                DataZwrotu = DateTime.Now.AddDays(-2),
-                KlientId = 1,
-                Klient = sztuczniKlienci[0],
-                SprzetId = 1,
-                Sprzet = sztucznySprzet[0]
-            }
-        };
-
+        // 1. LISTA WYNAJMÓW (Index)
         public ActionResult Index()
         {
-            return View(makietaWynajmow);
+            // .Include automatycznie dołącza powiązane dane klienta i sprzętu w jednym zapytaniu SQL
+            var wynajmy = db.Wynajmy.Include(w => w.Klient).Include(w => w.Sprzet).ToList();
+            return View(wynajmy);
         }
 
+        // 2. FORMULARZ DODAWANIA (GET)
         public ActionResult Create()
         {
-            ViewBag.KlientId = new SelectList(sztuczniKlienci, "Id", "Nazwisko");
-            ViewBag.SprzetId = new SelectList(sztucznySprzet, "Id", "Nazwa");
+            // ZMIANA: Pobieramy tylko sprzęty, które NIE mają statusu "Wynajęte"
+            ViewBag.SprzetId = new SelectList(db.Sprzets.Where(s => s.Status != "Wynajęte"), "Id", "Nazwa");
+
+            // Pobieramy listę klientów i łączymy Imię z Nazwiskiem, by ładnie wyglądało w dropdownie
+            var listaKlientow = db.Klienci.ToList().Select(k => new {
+                Id = k.Id,
+                PelneDane = k.Imie + " " + k.Nazwisko
+            });
+            ViewBag.KlientId = new SelectList(listaKlientow, "Id", "PelneDane");
+
             return View();
         }
 
+        // 3. ZAPIS WYNAJMU (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Wynajem wynajem)
+        public ActionResult Create([Bind(Include = "Id,DataWynajmu,DataZwrotu,SprzetId,KlientId")] Wynajem wynajem)
         {
             if (ModelState.IsValid)
             {
-                wynajem.Id = makietaWynajmow.Count > 0 ? makietaWynajmow.Max(w => w.Id) + 1 : 1;
+                if (wynajem.DataWynajmu != DateTime.MinValue)
+                {
+                    var sprzet = db.Sprzets.Find(wynajem.SprzetId);
+                    if (sprzet != null)
+                    {
+                        sprzet.Status = "Wynajęty";
+                        db.Entry(sprzet).State = EntityState.Modified;
+                    }
+                }
+                else
+                {
+                    var sprzet = db.Sprzets.Find(wynajem.SprzetId);
+                    if (sprzet != null)
+                    {
+                        sprzet.Status = "Dostępny";
+                        db.Entry(sprzet).State = EntityState.Modified;
+                    }
+                }
 
-                wynajem.Klient = sztuczniKlienci.FirstOrDefault(k => k.Id == wynajem.KlientId);
-                wynajem.Sprzet = sztucznySprzet.FirstOrDefault(s => s.Id == wynajem.SprzetId);
-
-               
-                makietaWynajmow.Add(wynajem);
-
+                db.Wynajmy.Add(wynajem);
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.KlientId = new SelectList(sztuczniKlienci, "Id", "Nazwisko", wynajem.KlientId);
-            ViewBag.SprzetId = new SelectList(sztucznySprzet, "Id", "Nazwa", wynajem.SprzetId);
+            ViewBag.SprzetId = new SelectList(db.Sprzets.Where(s => s.Status != "Wynajęte"), "Id", "Nazwa", wynajem.SprzetId);
+            var listaKlientow = db.Klienci.ToList().Select(k => new { Id = k.Id, PelneDane = k.Imie + " " + k.Nazwisko });
+            ViewBag.KlientId = new SelectList(listaKlientow, "Id", "PelneDane", wynajem.KlientId);
             return View(wynajem);
+        }
+        // 4. USUWANIE WYNAJMU (POST)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id)
+        {
+            var wynajem = db.Wynajmy.Find(id);
+
+            if (wynajem != null)
+            {
+                var sprzet = db.Sprzets.Find(wynajem.SprzetId);
+                if (sprzet != null)
+                {
+                    sprzet.Status = "Dostępny";
+                    db.Entry(sprzet).State = EntityState.Modified;
+                }
+
+                db.Wynajmy.Remove(wynajem);
+
+                db.SaveChanges();
+            }
+
+            return RedirectToAction("Index");
+        }
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

@@ -1,0 +1,55 @@
+﻿@model IEnumerable<Bazy_danych.Models.Serwis>
+
+@{
+    ViewBag.Title = "Historia Serwisowa";
+}
+
+<h2>Panel Serwisowy Sprzętu</h2>
+
+<p>
+    @Html.ActionLink("Wyślij nowy sprzęt na serwis", "Create", null, new { @class = "btn btn-warning" })
+</p>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Nazwa sprzętu</th>
+            <th>Data rozpoczęcia</th>
+            <th>Data zakończenia</th>
+            <th>Opis usterki</th>
+            <th>Status zgłoszenia</th>
+            <th>Akcje</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Sprzet.Nazwa</td>
+                <td>@item.DataRozpoczecia.ToShortDateString()</td>
+                <td>@(item.DataZakonczenia.HasValue ? item.DataZakonczenia.Value.ToShortDateString() : "W trakcie naprawy")</td>
+                <td>@item.Opis</td>
+                <td>
+                    @if (item.DataZakonczenia.HasValue)
+                    {
+                        <span class="badge bg-success text-white p-2">Naprawiono</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark p-2">W serwisie</span>
+                    }
+                </td>
+                <td>
+                    @if (!item.DataZakonczenia.HasValue)
+                    {
+                        using (Html.BeginForm("PowrotZSerwisu", "Serwisy", new { id = item.Id }, FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success btn-sm">Odbierz z serwisu (Ustaw Dostępny)</button>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
