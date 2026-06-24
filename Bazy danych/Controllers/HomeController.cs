@@ -16,17 +16,21 @@ namespace Bazy_danych.Controllers
 
         public ActionResult Index()
         {
-            // Bezpośrednie zapytania SQL zapobiegają błędowi 'Invalid object name'
+            // Komplet zapytania całkowicie odpornego na kodowanie znaków i typy danych typu NCHAR
             var stats = new Home
             {
                 // 1. Łączna liczba sprzętu w systemie
                 TotalEquipment = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM [dbo].[Sprzets]").FirstOrDefault(),
 
-                // 2. Liczba sprzętu o statusie "Wynajęty"
-                ActiveRentals = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM [dbo].[Sprzets] WHERE [Status] = 'Wynajęty'").FirstOrDefault(),
+                // 2. BEZPIECZNE ZLICZANIE WYNAJĘTYCH (Łapie słowa: Wynajęty, Wynajety, Wynajęte, WYNAJĘTY itd.)
+                ActiveRentals = db.Database.SqlQuery<int>(
+                    "SELECT COUNT(*) FROM [dbo].[Sprzets] WHERE UPPER(CAST([Status] AS NVARCHAR(MAX))) LIKE '%WYNAJ%'"
+                ).FirstOrDefault(),
 
-                // 3. Liczba sprzętu o statusie "Serwis"
-                TotalInService = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM [dbo].[Sprzets] WHERE [Status] = 'Serwis'").FirstOrDefault(),
+                // 3. BEZPIECZNE ZLICZANIE SERWISU
+                TotalInService = db.Database.SqlQuery<int>(
+                    "SELECT COUNT(*) FROM [dbo].[Sprzets] WHERE UPPER(CAST([Status] AS NVARCHAR(MAX))) LIKE '%SERWIS%'"
+                ).FirstOrDefault(),
 
                 // 4. Łączna liczba klientów
                 TotalClients = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM [dbo].[Klients]").FirstOrDefault(),

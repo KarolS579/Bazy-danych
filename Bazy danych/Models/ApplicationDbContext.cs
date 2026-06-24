@@ -13,9 +13,8 @@ namespace Bazy_danych.Models
     // 2. Inherit from IdentityDbContext to get all the built-in security tables
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        // ZMIANA: Wpisanie bezpośrednich parametrów połączenia do Twojej bazy w SSMS z pominięciem Web.config
         public ApplicationDbContext()
-            : base(@"Data Source=.;Initial Catalog=BazyDanychDB (1);Integrated Security=True;Encrypt=False;TrustServerCertificate=True;", throwIfV1Schema: false)
+            : base("name=DefaultConnection", throwIfV1Schema: false)
         {
         }
 
@@ -30,5 +29,18 @@ namespace Bazy_danych.Models
         public DbSet<PendingRegistration> PendingRegistrations { get; set; }
         public DbSet<Wynajem> Wynajmy { get; set; }
         public DbSet<Serwis> Serwisy { get; set; }
+
+        // PRZENIESIONE: Metoda konfiguracji bazy danych musi być wewnątrz klasy kontekstu
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Konfiguracja relacji: Jeden Sprzęt ma Wiele Wynajmów
+            modelBuilder.Entity<Wynajem>()
+                .HasRequired(w => w.Sprzets) // ZMIANA: z w.Sprzets na w.Sprzet (zgodnie z właściwością w klasie Wynajem)
+                .WithMany(s => s.Wynajmy)
+                .HasForeignKey(w => w.SprzetId)
+                .WillCascadeOnDelete(false); // Blokada No Action / Restrict
+        }
     }
 }

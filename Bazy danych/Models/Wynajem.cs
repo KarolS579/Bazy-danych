@@ -25,7 +25,7 @@ namespace Bazy_danych.Models
         public int SprzetId { get; set; }
 
         [ForeignKey("SprzetId")]
-        public virtual Sprzet Sprzet { get; set; } // Pozwala wyciągnąć np. Sprzet.Nazwa
+        public virtual Sprzet Sprzets { get; set; } // Pozwala wyciągnąć np. Sprzet.Nazwa
 
         // --- POWIĄZANIE Z KLIENTEM ---
         [Required]

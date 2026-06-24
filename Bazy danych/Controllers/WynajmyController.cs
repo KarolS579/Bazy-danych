@@ -16,18 +16,26 @@ namespace Bazy_danych.Controllers
         public ActionResult Index()
         {
             // .Include automatycznie dołącza powiązane dane klienta i sprzętu w jednym zapytaniu SQL
-            var wynajmy = db.Wynajmy.Include(w => w.Klient).Include(w => w.Sprzet).ToList();
+            var wynajmy = db.Wynajmy.Include(w => w.Klient).Include(w => w.Sprzets).ToList();
             return View(wynajmy);
         }
 
         // 2. FORMULARZ DODAWANIA (GET)
+        // 2. FORMULARZ DODAWANIA (GET)
         public ActionResult Create()
         {
-            // ZMIANA: Pobieramy tylko sprzęty, które NIE mają statusu "Wynajęte"
-            ViewBag.SprzetId = new SelectList(db.Sprzets.Where(s => s.Status != "Wynajęte"), "Id", "Nazwa");
+            // Czyścimy pamięć podręczną kontekstu, aby na pewno pobrać nowy sprzęt po reinstalacji w bazie
+            db.Configuration.ProxyCreationEnabled = false;
 
-            // Pobieramy listę klientów i łączymy Imię z Nazwiskiem, by ładnie wyglądało w dropdownie
-            var listaKlientow = db.Klienci.ToList().Select(k => new {
+            // Pobieramy tylko te sprzęty, które NIE są aktualnie wynajęte ani w serwisie
+            var dostepneSprzety = db.Sprzets
+                                    .AsNoTracking() // Wymuszamy bezpośrednie zapytanie do bazy danych (omijamy Cache)
+                                    .Where(s => s.Status == "Dostępny")
+                                    .ToList();
+
+            ViewBag.SprzetId = new SelectList(dostepneSprzety, "Id", "Nazwa");
+
+            var listaKlientow = db.Klienci.AsNoTracking().ToList().Select(k => new {
                 Id = k.Id,
                 PelneDane = k.Imie + " " + k.Nazwisko
             });
@@ -43,30 +51,16 @@ namespace Bazy_danych.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (wynajem.DataWynajmu != DateTime.MinValue)
-                {
-                    var sprzet = db.Sprzets.Find(wynajem.SprzetId);
-                    if (sprzet != null)
-                    {
-                        sprzet.Status = "Wynajęty";
-                        db.Entry(sprzet).State = EntityState.Modified;
-                    }
-                }
-                else
-                {
-                    var sprzet = db.Sprzets.Find(wynajem.SprzetId);
-                    if (sprzet != null)
-                    {
-                        sprzet.Status = "Dostępny";
-                        db.Entry(sprzet).State = EntityState.Modified;
-                    }
-                }
+                // Wszystkie if-y sprawdzające sprzęt i modyfikujące EntityState.Modified zostają usunięte.
+                // Trigger w bazie danych wykona to automatycznie po wywołaniu SaveChanges().
 
                 db.Wynajmy.Add(wynajem);
                 db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
 
+            // Kod w przypadku błędu walidacji (pozostaje bez zmian)
             ViewBag.SprzetId = new SelectList(db.Sprzets.Where(s => s.Status != "Wynajęte"), "Id", "Nazwa", wynajem.SprzetId);
             var listaKlientow = db.Klienci.ToList().Select(k => new { Id = k.Id, PelneDane = k.Imie + " " + k.Nazwisko });
             ViewBag.KlientId = new SelectList(listaKlientow, "Id", "PelneDane", wynajem.KlientId);
