@@ -21,7 +21,6 @@ namespace Bazy_danych.Controllers
         }
 
         // 2. FORMULARZ DODAWANIA (GET)
-        // 2. FORMULARZ DODAWANIA (GET)
         public ActionResult Create()
         {
             // Czyścimy pamięć podręczną kontekstu, aby na pewno pobrać nowy sprzęt po reinstalacji w bazie

@@ -194,6 +194,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Triggers.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
     <Compile Include="Models\Home.cs" />
     <Compile Include="Models\Klient.cs" />
