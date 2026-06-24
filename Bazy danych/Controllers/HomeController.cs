@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Bazy_danych.Models;
+using Bazy_Danych.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
-using Bazy_danych.Models;
-using Bazy_Danych.Models;
 
 namespace Bazy_danych.Controllers
 {
@@ -16,22 +16,27 @@ namespace Bazy_danych.Controllers
 
         public ActionResult Index()
         {
-            // Make sure your database context matches your model names
+            // Komplet zapytania całkowicie odpornego na kodowanie znaków i typy danych typu NCHAR
             var stats = new Home
             {
-                // 1. Total number of equipment pieces in the system
-                TotalEquipment = db.Sprzet.Count(),
+                // 1. Łączna liczba sprzętu w systemie
+                TotalEquipment = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM [dbo].[Sprzets]").FirstOrDefault(),
 
-                // 2. Count ONLY items where the status string is exactly "Wynajęty"
-                ActiveRentals = db.Sprzet.Count(s => s.Status == "Wynajęty"),
+                // 2. BEZPIECZNE ZLICZANIE WYNAJĘTYCH (Łapie słowa: Wynajęty, Wynajety, Wynajęte, WYNAJĘTY itd.)
+                ActiveRentals = db.Database.SqlQuery<int>(
+                    "SELECT COUNT(*) FROM [dbo].[Sprzets] WHERE UPPER(CAST([Status] AS NVARCHAR(MAX))) LIKE '%WYNAJ%'"
+                ).FirstOrDefault(),
 
-                // 3. Count ONLY items where the status string is exactly "W serwisie"
-                TotalInService = db.Sprzet.Count(s => s.Status == "Serwis"),
+                // 3. BEZPIECZNE ZLICZANIE SERWISU
+                TotalInService = db.Database.SqlQuery<int>(
+                    "SELECT COUNT(*) FROM [dbo].[Sprzets] WHERE UPPER(CAST([Status] AS NVARCHAR(MAX))) LIKE '%SERWIS%'"
+                ).FirstOrDefault(),
 
-                // 4. Total number of active clients
-                TotalClients = db.Klienci.Count(),
+                // 4. Łączna liczba klientów
+                TotalClients = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM [dbo].[Klients]").FirstOrDefault(),
 
-                TotalWarehouses = db.Magazyny.Count()
+                // 5. Łączna liczba magazynów
+                TotalWarehouses = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM [dbo].[Magazyns]").FirstOrDefault()
             };
 
             return View(stats);
@@ -40,14 +45,12 @@ namespace Bazy_danych.Controllers
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
-
             return View();
         }
 
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
-
             return View();
         }
 
@@ -55,7 +58,6 @@ namespace Bazy_danych.Controllers
         {
             return View();
         }
-
 
         public ActionResult Klienci()
         {
@@ -87,4 +89,3 @@ namespace Bazy_danych.Controllers
         }
     }
 }
-

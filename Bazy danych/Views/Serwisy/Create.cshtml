@@ -14,6 +14,8 @@
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
+        @Html.Hidden("DataRozpoczecia", DateTime.Now.ToString("yyyy-MM-dd"))
+
         <div class="form-group">
             @Html.LabelFor(model => model.SprzetId, "Wybierz uszkodzony sprzęt", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -23,17 +25,17 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.OpisUsterki, "Opis objawów / usterki", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Opis, "Opis objawów / usterki", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.TextAreaFor(model => model.OpisUsterki, new { @class = "form-control", rows = 4 })
-                @Html.ValidationMessageFor(model => model.OpisUsterki, "", new { @class = "text-danger" })
+                @Html.TextAreaFor(model => model.Opis, new { @class = "form-control", rows = 4 })
+                @Html.ValidationMessageFor(model => model.Opis, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Zgłoś awarię" class="btn btn-danger" />
-                @Html.ActionLink("Powrót do rejestru", "Index", null, new { @class = "btn btn-default" })
+                @Html.ActionLink("Powrót do rejestru", "Index", "Serwisy", null, new { @class = "btn btn-default" })
             </div>
         </div>
     </div>

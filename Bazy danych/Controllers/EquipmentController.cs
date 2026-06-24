@@ -16,7 +16,7 @@ namespace Bazy_danych.Controllers
         private static readonly string[] EquipmentStatuses = new[] { "Dostępny", "Wynajęty", "Serwis" };
         public ActionResult Equipment()
         {
-            var items = db.Sprzet.OrderByDescending(x => x.CreatedDate).ToList();
+            var items = db.Sprzets.OrderByDescending(x => x.CreatedDate).ToList();
             return View(items);
         }
 
@@ -40,7 +40,7 @@ namespace Bazy_danych.Controllers
             if (ModelState.IsValid)
             {
                 model.CreatedDate = DateTime.Now;
-                db.Sprzet.Add(model);
+                db.Sprzets.Add(model);
                 db.SaveChanges();
                 return RedirectToAction("Equipment");
             }
@@ -56,7 +56,7 @@ namespace Bazy_danych.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var item = db.Sprzet.Find(id.Value);
+            var item = db.Sprzets.Find(id.Value);
             if (item == null)
             {
                 return HttpNotFound();
@@ -79,7 +79,7 @@ namespace Bazy_danych.Controllers
 
             if (ModelState.IsValid)
             {
-                var item = db.Sprzet.Find(model.Id);
+                var item = db.Sprzets.Find(model.Id);
                 if (item == null)
                 {
                     return HttpNotFound();
@@ -97,21 +97,30 @@ namespace Bazy_danych.Controllers
             ViewBag.Statuses = new SelectList(EquipmentStatuses, model.Status);
             return View(model);
         }
-
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteEquipment(int id)
+        public JsonResult DeleteJson(int id)
         {
-            var item = db.Sprzet.Find(id);
-            if (item == null)
+            var sprzet = db.Sprzets.Find(id);
+            if (sprzet == null)
             {
-                return HttpNotFound();
+                return Json(new { success = false, message = "Nie znaleziono sprzętu." });
             }
 
-            db.Sprzet.Remove(item);
-            db.SaveChanges();
-
-            return RedirectToAction("Equipment");
+            try
+            {
+                db.Sprzets.Remove(sprzet);
+                db.SaveChanges(); // Tutaj SQL Server wyrzuci błąd, jeśli zadziała NO ACTION
+                return Json(new { success = true });
+            }
+            catch (System.Data.Entity.Infrastructure.DbUpdateException)
+            {
+                // Komunikat, który przekażemy do przeglądarki Chrome
+                return Json(new
+                {
+                    success = false,
+                    message = "Nie można usunąć tego sprzętu, ponieważ posiada aktywne wynajmy w bazie danych!"
+                });
+            }
         }
         protected override void Dispose(bool disposing)
         {

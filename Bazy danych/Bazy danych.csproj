@@ -168,6 +168,30 @@
     <Compile Include="Migrations\202606101200000_AddSprzetTableAndCreatedDate.cs" />
     <Compile Include="Migrations\202606101430000_AddMagazynTable.cs" />
     <Compile Include="Migrations\202606101730000_AddPendingRegistrationTable.cs" />
+    <Compile Include="Migrations\202606172322228_UtworzenieTabeliWynajmow.cs" />
+    <Compile Include="Migrations\202606172322228_UtworzenieTabeliWynajmow.Designer.cs">
+      <DependentUpon>202606172322228_UtworzenieTabeliWynajmow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202606172332513_ZwiekszenieDlugosciEmail.cs" />
+    <Compile Include="Migrations\202606172332513_ZwiekszenieDlugosciEmail.Designer.cs">
+      <DependentUpon>202606172332513_ZwiekszenieDlugosciEmail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202606172340535_ZwiekszenieDlugosciTelefonu.cs" />
+    <Compile Include="Migrations\202606172340535_ZwiekszenieDlugosciTelefonu.Designer.cs">
+      <DependentUpon>202606172340535_ZwiekszenieDlugosciTelefonu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202606180009006_DodanieTabeliSerwisu.cs" />
+    <Compile Include="Migrations\202606180009006_DodanieTabeliSerwisu.Designer.cs">
+      <DependentUpon>202606180009006_DodanieTabeliSerwisu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202606180011318_DodanieTabeliSerwisu1.cs" />
+    <Compile Include="Migrations\202606180011318_DodanieTabeliSerwisu1.Designer.cs">
+      <DependentUpon>202606180011318_DodanieTabeliSerwisu1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202606232319538_WlaczenieBlokadyUsuwania.cs" />
+    <Compile Include="Migrations\202606232319538_WlaczenieBlokadyUsuwania.Designer.cs">
+      <DependentUpon>202606232319538_WlaczenieBlokadyUsuwania.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -252,8 +276,8 @@
     <Content Include="Views\Klienci\Create.cshtml" />
     <Content Include="Views\Klienci\Edit.cshtml" />
     <Content Include="Views\Klienci\Index.cshtml" />
-    <Content Include="Views\Serwis\Create.cshtml" />
-    <Content Include="Views\Serwis\Index.cshtml" />
+    <Content Include="Views\Serwisy\Create.cshtml" />
+    <Content Include="Views\Serwisy\Index.cshtml" />
     <Content Include="Views\Wynajmy\Create.cshtml" />
     <Content Include="Views\Wynajmy\Index.cshtml" />
   </ItemGroup>
@@ -293,6 +317,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202605122319055_InitialIdentitySetup.resx">
       <DependentUpon>202605122319055_InitialIdentitySetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202606172322228_UtworzenieTabeliWynajmow.resx">
+      <DependentUpon>202606172322228_UtworzenieTabeliWynajmow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202606172332513_ZwiekszenieDlugosciEmail.resx">
+      <DependentUpon>202606172332513_ZwiekszenieDlugosciEmail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202606172340535_ZwiekszenieDlugosciTelefonu.resx">
+      <DependentUpon>202606172340535_ZwiekszenieDlugosciTelefonu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202606180009006_DodanieTabeliSerwisu.resx">
+      <DependentUpon>202606180009006_DodanieTabeliSerwisu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202606180011318_DodanieTabeliSerwisu1.resx">
+      <DependentUpon>202606180011318_DodanieTabeliSerwisu1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202606232319538_WlaczenieBlokadyUsuwania.resx">
+      <DependentUpon>202606232319538_WlaczenieBlokadyUsuwania.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

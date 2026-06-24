@@ -1,43 +1,38 @@
 ﻿@model IEnumerable<Bazy_danych.Models.Wynajem>
 
 @{
-    ViewBag.Title = "Rejestr Wynajmów";
+    ViewBag.Title = "Lista Wynajmów";
 }
 
-<h2>@ViewBag.Title</h2>
+<h2>Panel Wynajmów</h2>
 
 <p>
-    @Html.ActionLink("Zarejestruj nowy wynajem", "Create", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Dodaj nowy wynajem", "Create", null, new { @class = "btn btn-primary" })
 </p>
 
-<table class="table table-striped table-bordered">
-    <thead>
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
         <tr>
-            <th>Klient</th>
-            <th>Wypożyczony sprzęt</th>
-            <th>Data wypożyczenia</th>
-            <th>Data zwrotu</th>
-            <th>Status</th>
+            <th>Klient (Imię i Nazwisko)</th>
+            <th>Nazwa sprzętu</th>
+            <th>Data wynajmu</th>
+            <th>Planowany zwrot</th>
+            <th>Akcje</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.Klient.Nazwisko</td> 
-                <td>@item.Sprzet.Nazwa</td>    
-                <td>@item.DataWypozyczenia.ToShortDateString()</td>
+                <td>@item.Klient.Imie @item.Klient.Nazwisko</td>
+                <td>@item.Sprzets.Nazwa</td>
+                <td>@item.DataWynajmu.ToShortDateString()</td>
+                <td>@(item.DataZwrotu.HasValue ? item.DataZwrotu.Value.ToShortDateString() : "Brak danych")</td>
                 <td>
-                    @(item.DataZwrotu.HasValue ? item.DataZwrotu.Value.ToShortDateString() : "Brak danych")
-                </td>
-                <td>
-                    @if (item.DataZwrotu.HasValue)
+                    @using (Html.BeginForm("Delete", "Wynajmy", new { id = item.Id }, FormMethod.Post, new { onsubmit = "return confirm('Czy na pewno chcesz usunąć ten wynajem i zwrócić sprzęt do magazynu?');", style = "display:inline;" }))
                     {
-                        <span class="label label-success">Zwrócono</span>
-                    }
-                    else
-                    {
-                        <span class="label label-warning">W trakcie</span>
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger btn-sm">Usuń wynajem</button>
                     }
                 </td>
             </tr>

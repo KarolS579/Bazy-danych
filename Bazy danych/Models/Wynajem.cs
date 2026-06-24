@@ -4,29 +4,35 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Bazy_danych.Models
 {
+    [Table("Wynajems")] // Wymuszenie nazwy zgodnej z konwencją Twojej bazy (końcówka "s")
     public class Wynajem
     {
         [Key]
         public int Id { get; set; }
 
         [Required]
-        [Display(Name = "Data wypożyczenia")]
+        [Display(Name = "Data wynajmu")]
         [DataType(DataType.Date)]
-        public DateTime DataWypozyczenia { get; set; }
+        public DateTime DataWynajmu { get; set; }
 
         [Display(Name = "Data zwrotu")]
         [DataType(DataType.Date)]
-        public DateTime? DataZwrotu { get; set; } 
+        public DateTime? DataZwrotu { get; set; }
 
-
-        [Display(Name = "Klient")]
-        public int KlientId { get; set; }
-        [ForeignKey("KlientId")]
-        public virtual Klient Klient { get; set; } 
-
-        [Display(Name = "Sprzęt")]
+        // --- POWIĄZANIE ZE SPRZĘTEM ---
+        [Required]
+        [Display(Name = "Wybierz sprzęt")]
         public int SprzetId { get; set; }
+
         [ForeignKey("SprzetId")]
-        public virtual Sprzet Sprzet { get; set; } 
+        public virtual Sprzet Sprzets { get; set; } // Pozwala wyciągnąć np. Sprzet.Nazwa
+
+        // --- POWIĄZANIE Z KLIENTEM ---
+        [Required]
+        [Display(Name = "Wybierz klienta")]
+        public int KlientId { get; set; }
+
+        [ForeignKey("KlientId")]
+        public virtual Klient Klient { get; set; } // Pozwala wyciągnąć np. Klient.Imie i Klient.Nazwisko
     }
 }
