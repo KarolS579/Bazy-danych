@@ -9,14 +9,12 @@ namespace Bazy_danych.Controllers
     [Authorize]
     public class KlienciController : Controller
     {
-        // This is your live bridge to the database
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Klienci
         public ActionResult Index()
         {
-            // PULL FROM REAL DATABASE: Fetch actual records from SQL
-            var listaKlientow = db.Klienci.ToList();
+            var listaKlientow = db.Database.SqlQuery<Klient>("SELECT * FROM Klients").ToList();
             return View(listaKlientow);
         }
 
@@ -27,63 +25,10 @@ namespace Bazy_danych.Controllers
         }
 
         // POST: Klienci/Create
-[HttpPost]
-[ValidateAntiForgeryToken]
-public ActionResult Create(Klient klient)
-{
-    // Wipe out default low-level framework mapping complaints for individual text strings if they break completely
-    string[] properties = { "Imie", "Nazwisko", "Telefon", "Email", "Adres", "Firma", "Uwagi" };
-    foreach (var prop in properties)
-    {
-        if (ModelState[prop] != null && ModelState[prop].Errors.Count > 0)
-        {
-            // Only overwrite if the framework completely failed to bind the text stream layout
-            var error = ModelState[prop].Errors.FirstOrDefault();
-            if (error != null && (error.Exception != null || string.IsNullOrEmpty(error.ErrorMessage)))
-            {
-                ModelState[prop].Errors.Clear();
-                ModelState.AddModelError(prop, "Wprowadzona wartość jest zbyt długa lub nieprawidłowa!");
-            }
-        }
-    }
-
-    // This will evaluate to 'false' if a user inputs numbers into Imie or Nazwisko
-    if (ModelState.IsValid)
-    {
-        db.Klienci.Add(klient);
-        db.SaveChanges();
-        return RedirectToAction("Index");
-    }
-
-    // Returns back to the view showing your customized letter-only constraint message
-    return View(klient);
-}
-
-        // 1. GET: Klienci/Edit/4 (Loads the page with the client's current data)
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest);
-            }
-
-            // Find the client in the real database using the ID from the URL
-            Klient klient = db.Klienci.Find(id);
-
-            if (klient == null)
-            {
-                return HttpNotFound(); // Returns a clean 404 if the client ID doesn't exist in SQL
-            }
-
-            return View(klient); // Passes the client data over to the Edit.cshtml view
-        }
-
-        // 2. POST: Klienci/Edit/4 (Saves the updated data back to SQL)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(Klient klient)
+        public ActionResult Create(Klient klient)
         {
-            // Clean up framework line-length string binding errors if necessary
             string[] properties = { "Imie", "Nazwisko", "Telefon", "Email", "Adres", "Firma", "Uwagi" };
             foreach (var prop in properties)
             {
@@ -100,14 +45,83 @@ public ActionResult Create(Klient klient)
 
             if (ModelState.IsValid)
             {
-                // Tell Entity Framework that this record already exists and needs to be updated
-                db.Entry(klient).State = System.Data.Entity.EntityState.Modified;
-                db.SaveChanges(); // Commit updates to the database
+                string sql = "INSERT INTO Klients (Imie, Nazwisko, Telefon, Email, Adres, Firma, Uwagi) " +
+                             "VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6)";
+
+                db.Database.ExecuteSqlCommand(sql,
+                    klient.Imie,
+                    klient.Nazwisko,
+                    klient.Telefon,
+                    klient.Email,
+                    klient.Adres,
+                    klient.Firma,
+                    klient.Uwagi
+                );
 
                 return RedirectToAction("Index");
             }
 
-            return View(klient); // If validation fails (e.g. numbers in name), stay on page with errors
+            return View(klient);
+        }
+
+        // GET: Klienci/Edit/4
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest);
+            }
+
+            // Pobieranie pojedynczego klienta po ID przy użyciu parametru @p0
+            Klient klient = db.Database.SqlQuery<Klient>("SELECT * FROM Klients WHERE Id = @p0", id).FirstOrDefault();
+
+            if (klient == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(klient);
+        }
+
+        // POST: Klienci/Edit/4
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(Klient klient)
+        {
+            string[] properties = { "Imie", "Nazwisko", "Telefon", "Email", "Adres", "Firma", "Uwagi" };
+            foreach (var prop in properties)
+            {
+                if (ModelState[prop] != null && ModelState[prop].Errors.Count > 0)
+                {
+                    var error = ModelState[prop].Errors.FirstOrDefault();
+                    if (error != null && (error.Exception != null || string.IsNullOrEmpty(error.ErrorMessage)))
+                    {
+                        ModelState[prop].Errors.Clear();
+                        ModelState.AddModelError(prop, "Wprowadzona wartość jest zbyt długa lub nieprawidłowa!");
+                    }
+                }
+            }
+
+            if (ModelState.IsValid)
+            {
+                string sql = "UPDATE Klients SET Imie = @p0, Nazwisko = @p1, Telefon = @p2, Email = @p3, " +
+                             "Adres = @p4, Firma = @p5, Uwagi = @p6 WHERE Id = @p7";
+
+                db.Database.ExecuteSqlCommand(sql,
+                    klient.Imie,
+                    klient.Nazwisko,
+                    klient.Telefon,
+                    klient.Email,
+                    klient.Adres,
+                    klient.Firma,
+                    klient.Uwagi,
+                    klient.Id // przekazujemy ID na samym końcu dla warunku WHERE (@p7)
+                );
+
+                return RedirectToAction("Index");
+            }
+
+            return View(klient);
         }
 
         // POST: Klienci/DeleteKlienci
@@ -115,14 +129,8 @@ public ActionResult Create(Klient klient)
         [ValidateAntiForgeryToken]
         public ActionResult DeleteKlienci(int id)
         {
-            // This works perfectly now because it searches the same database tables!
-            Klient klient = db.Klienci.Find(id);
-
-            if (klient != null)
-            {
-                db.Klienci.Remove(klient);
-                db.SaveChanges();
-            }
+            string sql = "DELETE FROM Klients WHERE Id = @p0";
+            db.Database.ExecuteSqlCommand(sql, id);
 
             return RedirectToAction("Index");
         }
@@ -131,7 +139,7 @@ public ActionResult Create(Klient klient)
         {
             if (disposing)
             {
-                db.Dispose(); // Clears database connection pools safely
+                db.Dispose();
             }
             base.Dispose(disposing);
         }

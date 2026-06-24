@@ -1,12 +1,12 @@
-﻿using Bazy_danych.Models;
-using Bazy_Danych.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
+using Bazy_danych.Models;
+using Bazy_Danych.Models;
 
 namespace Bazy_danych.Controllers
 {
@@ -16,23 +16,17 @@ namespace Bazy_danych.Controllers
 
         public ActionResult Index()
         {
-            // Bezpośrednie zapytania SQL zapobiegają błędowi 'Invalid object name'
             var stats = new Home
             {
-                // 1. Łączna liczba sprzętu w systemie
-                TotalEquipment = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM [dbo].[Sprzets]").FirstOrDefault(),
+                TotalEquipment = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM Sprzets").FirstOrDefault(),
 
-                // 2. Liczba sprzętu o statusie "Wynajęty"
-                ActiveRentals = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM [dbo].[Sprzets] WHERE [Status] = 'Wynajęty'").FirstOrDefault(),
+                ActiveRentals = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM Sprzets WHERE Status = @p0", "Wynajęty").FirstOrDefault(),
 
-                // 3. Liczba sprzętu o statusie "Serwis"
-                TotalInService = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM [dbo].[Sprzets] WHERE [Status] = 'Serwis'").FirstOrDefault(),
+                TotalInService = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM Sprzets WHERE Status = @p0", "Serwis").FirstOrDefault(),
 
-                // 4. Łączna liczba klientów
-                TotalClients = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM [dbo].[Klients]").FirstOrDefault(),
+                TotalClients = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM Klients").FirstOrDefault(),
 
-                // 5. Łączna liczba magazynów
-                TotalWarehouses = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM [dbo].[Magazyns]").FirstOrDefault()
+                TotalWarehouses = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM Magazyns").FirstOrDefault()
             };
 
             return View(stats);
