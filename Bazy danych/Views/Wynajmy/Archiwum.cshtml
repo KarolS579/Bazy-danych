@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Bazy_danych.Models.ArchiwumWynajmu>
+
+@{
+    ViewBag.Title = "Archiwum Wynajmów";
+}
+
+<h2><i class="glyphicon glyphicon-folder-close"></i> Archiwum Starych Wynajmów</h2>
+<hr />
+
+<p>
+    @Html.ActionLink("Powrót do aktywnych wynajmów", "Index", null, new { @class = "btn btn-default" })
+</p>
+
+<table class="table table-striped table-hover table-bordered">
+    <thead>
+        <tr class="info">
+            <th>@Html.DisplayNameFor(model => model.Id)</th>
+            <th>Klient</th>
+            <th>Sprzęt</th>
+            <th>@Html.DisplayNameFor(model => model.DataWynajmu)</th>
+            <th>@Html.DisplayNameFor(model => model.DataZwrotu)</th>
+            <th>@Html.DisplayNameFor(model => model.DataArchiwizacji)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Klient.Imie @item.Klient.Nazwisko</td>
+                <td>@item.Sprzets.Nazwa</td>
+                <td>@item.DataWynajmu.ToShortDateString()</td>
+                <td>@(item.DataZwrotu.HasValue ? item.DataZwrotu.Value.ToShortDateString() : "-")</td>
+                <td><span class="label label-default">@item.DataArchiwizacji.ToString("yyyy-MM-dd HH:mm")</span></td>
+            </tr>
+        }
+    </tbody>
+</table>

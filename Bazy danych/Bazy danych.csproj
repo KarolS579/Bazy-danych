@@ -188,9 +188,22 @@
     <Compile Include="Migrations\202606180011318_DodanieTabeliSerwisu1.Designer.cs">
       <DependentUpon>202606180011318_DodanieTabeliSerwisu1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202606232319538_WlaczenieBlokadyUsuwania.cs" />
+    <Compile Include="Migrations\202606232319538_WlaczenieBlokadyUsuwania.Designer.cs">
+      <DependentUpon>202606232319538_WlaczenieBlokadyUsuwania.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202606242117169_ArchiwizacjaWynajmow.cs" />
+    <Compile Include="Migrations\202606242117169_ArchiwizacjaWynajmow.Designer.cs">
+      <DependentUpon>202606242117169_ArchiwizacjaWynajmow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202606242135158_NaprawaNazwyTabeliWProcedurze.cs" />
+    <Compile Include="Migrations\202606242135158_NaprawaNazwyTabeliWProcedurze.Designer.cs">
+      <DependentUpon>202606242135158_NaprawaNazwyTabeliWProcedurze.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
+    <Compile Include="Models\ArchiwumWynajmu.cs" />
     <Compile Include="Models\Home.cs" />
     <Compile Include="Models\Klient.cs" />
     <Compile Include="Models\Magazyn.cs" />
@@ -276,6 +289,7 @@
     <Content Include="Views\Serwisy\Index.cshtml" />
     <Content Include="Views\Wynajmy\Create.cshtml" />
     <Content Include="Views\Wynajmy\Index.cshtml" />
+    <Content Include="Views\Wynajmy\Archiwum.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -328,6 +342,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202606180011318_DodanieTabeliSerwisu1.resx">
       <DependentUpon>202606180011318_DodanieTabeliSerwisu1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202606232319538_WlaczenieBlokadyUsuwania.resx">
+      <DependentUpon>202606232319538_WlaczenieBlokadyUsuwania.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202606242117169_ArchiwizacjaWynajmow.resx">
+      <DependentUpon>202606242117169_ArchiwizacjaWynajmow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202606242135158_NaprawaNazwyTabeliWProcedurze.resx">
+      <DependentUpon>202606242135158_NaprawaNazwyTabeliWProcedurze.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

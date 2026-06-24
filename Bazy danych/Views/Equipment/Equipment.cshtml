@@ -4,7 +4,39 @@
 @{
     ViewBag.Title = "Zarządzanie Sprzętem";
 }
+@section scripts {
+    <script>
+    $(document).ready(function () {
+        $('.btn-usun-sprzet').click(function (e) {
+            e.preventDefault(); // Zatrzymujemy przeładowanie strony
 
+            var sprzetId = $(this).data('id');
+            var rowElement = $(this).closest('tr');
+
+            // Komunikat Chrome z pytaniem przed usunięciem
+            if (confirm("Czy na pewno chcesz spróbować usunąć ten sprzęt?")) {
+                $.ajax({
+                    url: '@Url.Action("DeleteJson", "Equipment")',
+                    type: 'POST',
+                    data: { id: sprzetId },
+                    success: function (response) {
+                        if (response.success) {
+                            // Jeśli się udało (sprzęt nie był powiązany z żadnym wynajmem)
+                            rowElement.fadeOut(500);
+                        } else {
+                            // Komunikat Chrome informujący o blokadzie w bazie danych
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert("Wystąpił nieoczekiwany błąd komunikacji z serwerem.");
+                    }
+                });
+            }
+        });
+    });
+    </script>
+}
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -35,11 +67,16 @@
                                 <td>@item.Kategoria</td>
                                 <td>@item.Cena_wynajmu.ToString("0.00")</td>
                                 <td>
-                                    @if (item.Status == "Dostępny")
+                                    @{
+                                        // Czyszczenie tekstu z bazy: usuwamy spacje i zamieniamy na małe litery
+                                        var statusOczyszczony = (item.Status ?? "").Trim().ToLower();
+                                    }
+
+                                    @if (statusOczyszczony == "dostępny" || statusOczyszczony == "dostepny")
                                     {
                                         <span class="badge bg-success">Dostępny</span>
                                     }
-                                    else if (item.Status == "Wynajęty")
+                                    else if (statusOczyszczony == "wynajęty" || statusOczyszczony == "wynajety")
                                     {
                                         <span class="badge bg-danger">Wynajęty</span>
                                     }
@@ -55,8 +92,7 @@
                                     {
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@item.Id" />
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Czy na pewno chcesz usunąć ten sprzęt?');">Usuń</button>
-                                    }
+                                        <button type="button" class="btn btn-sm btn-usun-sprzet btn-outline-danger" data-id="@item.Id">Usuń</button>                                    }
                                 </td>
                             </tr>
                         }

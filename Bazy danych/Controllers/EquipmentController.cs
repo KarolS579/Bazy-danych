@@ -97,21 +97,30 @@ namespace Bazy_danych.Controllers
             ViewBag.Statuses = new SelectList(EquipmentStatuses, model.Status);
             return View(model);
         }
-
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteEquipment(int id)
+        public JsonResult DeleteJson(int id)
         {
-            var item = db.Sprzets.Find(id);
-            if (item == null)
+            var sprzet = db.Sprzets.Find(id);
+            if (sprzet == null)
             {
-                return HttpNotFound();
+                return Json(new { success = false, message = "Nie znaleziono sprzętu." });
             }
 
-            db.Sprzets.Remove(item);
-            db.SaveChanges();
-
-            return RedirectToAction("Equipment");
+            try
+            {
+                db.Sprzets.Remove(sprzet);
+                db.SaveChanges(); // Tutaj SQL Server wyrzuci błąd, jeśli zadziała NO ACTION
+                return Json(new { success = true });
+            }
+            catch (System.Data.Entity.Infrastructure.DbUpdateException)
+            {
+                // Komunikat, który przekażemy do przeglądarki Chrome
+                return Json(new
+                {
+                    success = false,
+                    message = "Nie można usunąć tego sprzętu, ponieważ posiada aktywne wynajmy w bazie danych!"
+                });
+            }
         }
         protected override void Dispose(bool disposing)
         {

@@ -30,5 +30,6 @@ namespace Bazy_danych.Models
         public string Status { get; set; } 
 
         public DateTime CreatedDate { get; set; }
+        public virtual ICollection<Wynajem> Wynajmy { get; set; }
     }
 }

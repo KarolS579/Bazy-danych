@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Bazy_danych.Models;
+using Bazy_Danych.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
-using Bazy_danych.Models;
-using Bazy_Danych.Models;
 
 namespace Bazy_danych.Controllers
 {
@@ -16,17 +16,27 @@ namespace Bazy_danych.Controllers
 
         public ActionResult Index()
         {
+            // Komplet zapytania całkowicie odpornego na kodowanie znaków i typy danych typu NCHAR
             var stats = new Home
             {
-                TotalEquipment = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM Sprzets").FirstOrDefault(),
+                // 1. Łączna liczba sprzętu w systemie
+                TotalEquipment = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM [dbo].[Sprzets]").FirstOrDefault(),
 
-                ActiveRentals = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM Sprzets WHERE Status = @p0", "Wynajęty").FirstOrDefault(),
+                // 2. BEZPIECZNE ZLICZANIE WYNAJĘTYCH (Łapie słowa: Wynajęty, Wynajety, Wynajęte, WYNAJĘTY itd.)
+                ActiveRentals = db.Database.SqlQuery<int>(
+                    "SELECT COUNT(*) FROM [dbo].[Sprzets] WHERE UPPER(CAST([Status] AS NVARCHAR(MAX))) LIKE '%WYNAJ%'"
+                ).FirstOrDefault(),
 
-                TotalInService = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM Sprzets WHERE Status = @p0", "Serwis").FirstOrDefault(),
+                // 3. BEZPIECZNE ZLICZANIE SERWISU
+                TotalInService = db.Database.SqlQuery<int>(
+                    "SELECT COUNT(*) FROM [dbo].[Sprzets] WHERE UPPER(CAST([Status] AS NVARCHAR(MAX))) LIKE '%SERWIS%'"
+                ).FirstOrDefault(),
 
-                TotalClients = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM Klients").FirstOrDefault(),
+                // 4. Łączna liczba klientów
+                TotalClients = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM [dbo].[Klients]").FirstOrDefault(),
 
-                TotalWarehouses = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM Magazyns").FirstOrDefault()
+                // 5. Łączna liczba magazynów
+                TotalWarehouses = db.Database.SqlQuery<int>("SELECT COUNT(*) FROM [dbo].[Magazyns]").FirstOrDefault()
             };
 
             return View(stats);

@@ -1,4 +1,14 @@
-﻿@model IEnumerable<Bazy_danych.Models.Wynajem>
+﻿@using (Html.BeginForm("CzyscHistorie", "Wynajmy", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div style="margin: 15px 0;">
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Czy na pewno chcesz zarchiwizować i przenieść do archiwum wpisy starsze niż rok?');">
+            <i class="glyphicon glyphicon-trash"></i> Uruchom archiwizację bazy (starsze niż rok)
+        </button>
+    </div>
+}
+@Html.ActionLink("Zobacz Archiwum", "Archiwum", null, new { @class = "btn btn-info" })
+@model IEnumerable<Bazy_danych.Models.Wynajem>
 
 @{
     ViewBag.Title = "Lista Wynajmów";
@@ -25,7 +35,7 @@
         {
             <tr>
                 <td>@item.Klient.Imie @item.Klient.Nazwisko</td>
-                <td>@item.Sprzet.Nazwa</td>
+                <td>@item.Sprzets.Nazwa</td>
                 <td>@item.DataWynajmu.ToShortDateString()</td>
                 <td>@(item.DataZwrotu.HasValue ? item.DataZwrotu.Value.ToShortDateString() : "Brak danych")</td>
                 <td>

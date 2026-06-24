@@ -4,10 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Bazy_danych.Models
 {
-    [Table("Wynajems")] // Wymuszenie nazwy zgodnej z konwencją Twojej bazy (końcówka "s")
-    public class Wynajem
+    [Table("ArchiwumWynajmow")]
+    public class ArchiwumWynajmu
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
         [Required]
@@ -19,20 +20,22 @@ namespace Bazy_danych.Models
         [DataType(DataType.Date)]
         public DateTime? DataZwrotu { get; set; }
 
-        // --- POWIĄZANIE ZE SPRZĘTEM ---
         [Required]
-        [Display(Name = "Wybierz sprzęt")]
+        [Display(Name = "Sprzęt")]
         public int SprzetId { get; set; }
 
         [ForeignKey("SprzetId")]
-        public virtual Sprzet Sprzets { get; set; } // Pozwala wyciągnąć np. Sprzet.Nazwa
+        public virtual Sprzet Sprzets { get; set; }
 
-        // --- POWIĄZANIE Z KLIENTEM ---
         [Required]
-        [Display(Name = "Wybierz klienta")]
+        [Display(Name = "Klient")]
         public int KlientId { get; set; }
 
         [ForeignKey("KlientId")]
-        public virtual Klient Klient { get; set; } // Pozwala wyciągnąć np. Klient.Imie i Klient.Nazwisko
+        public virtual Klient Klient { get; set; }
+
+        [Required]
+        [Display(Name = "Zarchiwizowano dnia")]
+        public DateTime DataArchiwizacji { get; set; }
     }
 }
