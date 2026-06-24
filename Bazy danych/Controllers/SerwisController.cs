@@ -12,17 +12,17 @@ namespace Bazy_danych.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-  
+
         public ActionResult Index()
         {
             var serwisy = db.Serwisy.Include(s => s.Sprzet).ToList();
             return View(serwisy);
         }
 
-     
+
         public ActionResult Create()
         {
-           
+
             ViewBag.SprzetId = new SelectList(db.Sprzets.Where(s => s.Status == "Dostępny"), "Id", "Nazwa");
             return View();
         }
@@ -37,7 +37,7 @@ namespace Bazy_danych.Controllers
 
                 if (sprzet != null && sprzet.Status == "Dostępny")
                 {
-                    sprzet.Status = "Serwis"; 
+                    sprzet.Status = "Serwis";
                     db.Entry(sprzet).State = EntityState.Modified;
 
                     db.Serwisy.Add(serwis);
@@ -64,7 +64,7 @@ namespace Bazy_danych.Controllers
                 var sprzet = db.Sprzets.Find(serwis.SprzetId);
                 if (sprzet != null)
                 {
-                    sprzet.Status = "Dostępny"; 
+                    sprzet.Status = "Dostępny";
                     db.Entry(sprzet).State = EntityState.Modified;
                 }
 

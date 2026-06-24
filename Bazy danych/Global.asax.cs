@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Bazy_Danych;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -17,6 +18,12 @@ namespace Bazy_danych
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            using (var context = new Bazy_danych.Models.ApplicationDbContext())
+            {
+                Triggers.Initialize(context);
+            }
+
         }
     }
 }

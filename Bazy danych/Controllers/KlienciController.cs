@@ -9,12 +9,14 @@ namespace Bazy_danych.Controllers
     [Authorize]
     public class KlienciController : Controller
     {
+        // This is your live bridge to the database
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Klienci
         public ActionResult Index()
         {
-            var listaKlientow = db.Database.SqlQuery<Klient>("SELECT * FROM Klients").ToList();
+            // PULL FROM REAL DATABASE: Fetch actual records from SQL
+            var listaKlientow = db.Klienci.ToList();
             return View(listaKlientow);
         }
 
@@ -45,19 +47,8 @@ namespace Bazy_danych.Controllers
 
             if (ModelState.IsValid)
             {
-                string sql = "INSERT INTO Klients (Imie, Nazwisko, Telefon, Email, Adres, Firma, Uwagi) " +
-                             "VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6)";
-
-                db.Database.ExecuteSqlCommand(sql,
-                    klient.Imie,
-                    klient.Nazwisko,
-                    klient.Telefon,
-                    klient.Email,
-                    klient.Adres,
-                    klient.Firma,
-                    klient.Uwagi
-                );
-
+                db.Klienci.Add(klient);
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -72,8 +63,7 @@ namespace Bazy_danych.Controllers
                 return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest);
             }
 
-            // Pobieranie pojedynczego klienta po ID przy użyciu parametru @p0
-            Klient klient = db.Database.SqlQuery<Klient>("SELECT * FROM Klients WHERE Id = @p0", id).FirstOrDefault();
+            Klient klient = db.Klienci.Find(id);
 
             if (klient == null)
             {
@@ -104,19 +94,8 @@ namespace Bazy_danych.Controllers
 
             if (ModelState.IsValid)
             {
-                string sql = "UPDATE Klients SET Imie = @p0, Nazwisko = @p1, Telefon = @p2, Email = @p3, " +
-                             "Adres = @p4, Firma = @p5, Uwagi = @p6 WHERE Id = @p7";
-
-                db.Database.ExecuteSqlCommand(sql,
-                    klient.Imie,
-                    klient.Nazwisko,
-                    klient.Telefon,
-                    klient.Email,
-                    klient.Adres,
-                    klient.Firma,
-                    klient.Uwagi,
-                    klient.Id // przekazujemy ID na samym końcu dla warunku WHERE (@p7)
-                );
+                db.Entry(klient).State = System.Data.Entity.EntityState.Modified;
+                db.SaveChanges();
 
                 return RedirectToAction("Index");
             }
@@ -127,12 +106,38 @@ namespace Bazy_danych.Controllers
         // POST: Klienci/DeleteKlienci
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteKlienci(int id)
+        public JsonResult DeleteKlienci(int id)
         {
-            string sql = "DELETE FROM Klients WHERE Id = @p0";
-            db.Database.ExecuteSqlCommand(sql, id);
+            Klient klient = db.Klienci.Find(id);
 
-            return RedirectToAction("Index");
+            if (klient == null)
+            {
+                return Json(new { success = false, message = "Nie znaleziono klienta." });
+            }
+
+            // Sprawdzamy powiązanie z tabelą wynajmów
+            bool maAktywneWynajmy = db.Wynajmy.Any(w => w.KlientId == id);
+
+            if (maAktywneWynajmy)
+            {
+                // Zwracamy informację o blokadzie w formacie JSON bez usuwania
+                return Json(new
+                {
+                    success = false,
+                    message = "Nie można usunąć tego klienta, ponieważ posiada on aktywne wynajmy sprzętu!"
+                });
+            }
+
+            try
+            {
+                db.Klienci.Remove(klient);
+                db.SaveChanges();
+                return Json(new { success = true }); // Sukces - usunięto
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Wystąpił błąd bazy danych podczas usuwania klienta." });
+            }
         }
 
         protected override void Dispose(bool disposing)
