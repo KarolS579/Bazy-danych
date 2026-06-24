@@ -13,6 +13,7 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
+
             @if (Model != null && Model.Any())
             {
                 <div class="table-responsive">
@@ -47,13 +48,17 @@
                                     </td>
                                     <td>
                                         <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Edit", "Klienci", new { id = item.Id })">Edytuj</a>
-                                       @using (Html.BeginForm("DeleteKlienci", "Klienci", FormMethod.Post, new { @style = "display:inline;" }))
+
+                                        @using (Html.BeginForm("DeleteKlienci", "Klienci", FormMethod.Post, new { @class = "delete-client-form", @style = "display:inline;" }))
                                         {
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="id" value="@item.Id" />
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Czy na pewno chcesz usunąć tego klienta?');">Usuń</button>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Usuń</button>
                                         }
                                     </td>
+
+                                    @Html.ValidationSummary(false, "", new { @class = "text-danger mb-3 fw-bold" })
+
                                 </tr>
                             }
                         </tbody>
@@ -70,3 +75,37 @@
         </div>
     </div>
 </div>
+<script>
+    document.querySelectorAll('.delete-client-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            // 1. Zatrzymujemy standardowe przeładowanie strony
+            e.preventDefault();
+
+            // 2. Standardowe pytania potwierdzające użytkownika
+            if (!confirm('Czy na pewno chcesz usunąć tego klienta?')) {
+                return;
+            }
+
+            const formData = new FormData(this);
+
+            // 3. Wysyłanie żądania w tle (AJAX)
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Jeśli usunięto pomyślnie -> odświeżamy stronę, aby klient zniknął z listy
+                        window.location.reload();
+                    } else {
+                        // JEŚLI JEST BŁĄD (Klient ma wynajmy) -> WYŚWIETLAMY ALERT WINDOW
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Wystąpił nieoczekiwany błąd komunikacji.');
+                });
+        });
+    });
+</script>

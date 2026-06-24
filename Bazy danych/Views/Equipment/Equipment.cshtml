@@ -80,9 +80,17 @@
                                     {
                                         <span class="badge bg-danger">Wynajęty</span>
                                     }
-                                    else
+                                    else if (statusOczyszczony == "serwis")
                                     {
                                         <span class="badge bg-info text-dark">Serwis</span>
+                                    }
+                                    else if (statusOczyszczony == "archiwalny")
+                                    {
+                                        <span class="badge bg-secondary">Archiwalny</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-dark">@statusOczyszczony</span>
                                     }
                                 </td>
                                 <td>@item.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
