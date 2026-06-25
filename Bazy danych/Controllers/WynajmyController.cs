@@ -112,13 +112,11 @@ namespace Bazy_danych.Controllers
                                 
             BEGIN TRANSACTION;
             BEGIN TRY
-                -- Kopia danych ze sprawdzonej tabeli operacyjnej do archiwum
                 INSERT INTO dbo.ArchiwumWynajmow (Id, DataWynajmu, DataZwrotu, SprzetId, KlientId, DataArchiwizacji)
                 SELECT Id, DataWynajmu, DataZwrotu, SprzetId, KlientId, GETDATE()
                 FROM dbo.Wynajems
                 WHERE DataZwrotu IS NOT NULL AND DataZwrotu < @DataGraniczna;
 
-                -- Przywracanie statusu sprzętu na 'Dostępny' przed usunięciem wynajmu
                 UPDATE dbo.Sprzets
                 SET Status = 'Dostępny'
                 WHERE Id IN (
@@ -127,7 +125,6 @@ namespace Bazy_danych.Controllers
                     WHERE DataZwrotu IS NOT NULL AND DataZwrotu < @DataGraniczna
                 );
 
-                -- Usuwanie rekordów z głównej tabeli
                 DELETE FROM dbo.Wynajems
                 WHERE DataZwrotu IS NOT NULL AND DataZwrotu < @DataGraniczna;
 

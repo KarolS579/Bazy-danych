@@ -107,7 +107,6 @@ namespace Bazy_danych.Controllers
                 return Json(new { success = false, message = "Nie znaleziono sprzętu." });
             }
 
-            // --- KLUCZOWA ZMIANA 1: Status Archiwalny zawsze pomija blokady ---
             if (sprzet.Status == "Archiwalny")
             {
                 try
@@ -128,9 +127,6 @@ namespace Bazy_danych.Controllers
                 }
             }
 
-            // --- KLUCZOWA ZMIANA 2: Najwyższy priorytet mają AKTUALNE operacje (Wynajem i Serwis) ---
-
-            // 1. Sprawdzamy czy jest AKTUALNIE WYNAJĘTY (to musi być na samym górze!)
             bool maWynajmy = db.Wynajmy.Any(w => w.SprzetId == id) || sprzet.Status == "Wynajęty";
             if (maWynajmy)
             {
@@ -141,9 +137,7 @@ namespace Bazy_danych.Controllers
                 });
             }
 
-            // 2. Sprawdzamy czy AKTUALNIE PRZEBYWA W SERWISIE (brak daty zakończenia)
-            bool jestAktualnieWSerwisie = db.Serwisy.Any(s => s.SprzetId == id && s.DataZakonczenia == null)
-                                         || sprzet.Status == "Serwis";
+            bool jestAktualnieWSerwisie = db.Serwisy.Any(s => s.SprzetId == id && s.DataZakonczenia == null) || sprzet.Status == "Serwis";
 
             if (jestAktualnieWSerwisie)
             {
@@ -154,9 +148,6 @@ namespace Bazy_danych.Controllers
                 });
             }
 
-            // --- KLUCZOWA ZMIANA 3: Dopiero na samym końcu sprawdzamy STARYCH, zamkniętych serwisantów ---
-
-            // 3. Sprawdzamy czy posiada JAKĄKOLWIEK HISTORIĘ SERWISOWĄ
             bool posiadaHistorieSerwisowa = db.Serwisy.Any(s => s.SprzetId == id);
             if (posiadaHistorieSerwisowa)
             {

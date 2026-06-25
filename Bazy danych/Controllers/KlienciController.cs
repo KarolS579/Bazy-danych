@@ -9,7 +9,6 @@ namespace Bazy_danych.Controllers
     [Authorize]
     public class KlienciController : Controller
     {
-        // This is your live bridge to the database
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Klienci
@@ -55,7 +54,7 @@ namespace Bazy_danych.Controllers
             return View(klient);
         }
 
-        // GET: Klienci/Edit/4
+        // GET: Klienci/Edit
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -73,7 +72,7 @@ namespace Bazy_danych.Controllers
             return View(klient);
         }
 
-        // POST: Klienci/Edit/4
+        // POST: Klienci/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(Klient klient)
@@ -115,12 +114,10 @@ namespace Bazy_danych.Controllers
                 return Json(new { success = false, message = "Nie znaleziono klienta." });
             }
 
-            // Sprawdzamy powiązanie z tabelą wynajmów
             bool maAktywneWynajmy = db.Wynajmy.Any(w => w.KlientId == id);
 
             if (maAktywneWynajmy)
             {
-                // Zwracamy informację o blokadzie w formacie JSON bez usuwania
                 return Json(new
                 {
                     success = false,
@@ -132,7 +129,7 @@ namespace Bazy_danych.Controllers
             {
                 db.Klienci.Remove(klient);
                 db.SaveChanges();
-                return Json(new { success = true }); // Sukces - usunięto
+                return Json(new { success = true });
             }
             catch (Exception)
             {

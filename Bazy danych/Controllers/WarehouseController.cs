@@ -42,6 +42,14 @@ namespace Bazy_danych.Controllers
 
             if (ModelState.IsValid)
             {
+                bool nazwaIstnieje = db.Magazyny.Any(m => m.Nazwa.Equals(model.Nazwa, StringComparison.OrdinalIgnoreCase));
+
+                if (nazwaIstnieje)
+                {
+                    ModelState.AddModelError("Duplikat", "Magazyn o podanej nazwie już istnieje w bazie danych!");
+                    return View(model);
+                }
+
                 if (model.ZajeteMiejsce > model.Pojemnosc)
                 {
                     ModelState.AddModelError("ZajeteMiejsce", "Zajęte miejsce nie może być większe niż pojemność.");
