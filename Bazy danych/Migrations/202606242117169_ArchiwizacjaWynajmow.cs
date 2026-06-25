@@ -51,7 +51,7 @@ namespace Bazy_danych.Migrations
                         IF @@TRANCOUNT > 0 
                         BEGIN
                             ROLLBACK TRANSACTION;
-                        END
+                        END;
                         THROW;
                     END CATCH
                 END

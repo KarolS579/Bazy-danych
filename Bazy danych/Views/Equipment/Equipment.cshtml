@@ -4,11 +4,12 @@
 @{
     ViewBag.Title = "Zarządzanie Sprzętem";
 }
+
 @section scripts {
     <script>
     $(document).ready(function () {
         $('.btn-usun-sprzet').click(function (e) {
-            e.preventDefault(); // Zatrzymujemy przeładowanie strony
+            e.preventDefault(); // Zatrzymanie przeładowania strony
 
             var sprzetId = $(this).data('id');
             var rowElement = $(this).closest('tr');
@@ -68,7 +69,7 @@
                                 <td>@item.Cena_wynajmu.ToString("0.00")</td>
                                 <td>
                                     @{
-                                        // Czyszczenie tekstu z bazy: usuwamy spacje i zamieniamy na małe litery
+                                        // Czyszczenie tekstu z bazy: usuwanie spacij i zamiana na małe litery
                                         var statusOczyszczony = (item.Status ?? "").Trim().ToLower();
                                     }
 

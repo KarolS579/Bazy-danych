@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Bazy_danych.Models
 {
-    [Table("Wynajems")] // Wymuszenie nazwy zgodnej z konwencją Twojej bazy (końcówka "s")
+    [Table("Wynajems")]
     public class Wynajem
     {
         [Key]
@@ -19,7 +19,7 @@ namespace Bazy_danych.Models
         [DataType(DataType.Date)]
         public DateTime? DataZwrotu { get; set; }
 
-        // --- POWIĄZANIE ZE SPRZĘTEM ---
+        // POWIĄZANIE ZE SPRZĘTEM
         [Required]
         [Display(Name = "Wybierz sprzęt")]
         public int SprzetId { get; set; }
@@ -27,7 +27,7 @@ namespace Bazy_danych.Models
         [ForeignKey("SprzetId")]
         public virtual Sprzet Sprzets { get; set; } // Pozwala wyciągnąć np. Sprzet.Nazwa
 
-        // --- POWIĄZANIE Z KLIENTEM ---
+        // POWIĄZANIE Z KLIENTEM
         [Required]
         [Display(Name = "Wybierz klienta")]
         public int KlientId { get; set; }

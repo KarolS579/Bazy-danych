@@ -1,14 +1,4 @@
-﻿@using (Html.BeginForm("CzyscHistorie", "Wynajmy", FormMethod.Post))
-{
-    @Html.AntiForgeryToken()
-    <div style="margin: 15px 0;">
-        <button type="submit" class="btn btn-danger" onclick="return confirm('Czy na pewno chcesz zarchiwizować i przenieść do archiwum wpisy starsze niż rok?');">
-            <i class="glyphicon glyphicon-trash"></i> Uruchom archiwizację bazy (starsze niż rok)
-        </button>
-    </div>
-}
-@Html.ActionLink("Zobacz Archiwum", "Archiwum", null, new { @class = "btn btn-info" })
-@model IEnumerable<Bazy_danych.Models.Wynajem>
+﻿@model IEnumerable<Bazy_danych.Models.Wynajem>
 
 @{
     ViewBag.Title = "Lista Wynajmów";
@@ -16,18 +6,35 @@
 
 <h2>Panel Wynajmów</h2>
 
-<p>
-    @Html.ActionLink("Dodaj nowy wynajem", "Create", null, new { @class = "btn btn-primary" })
-</p>
+<div class="d-flex justify-content-between align-items-center mb-3 gap-2">
 
-<table class="table table-striped table-hover">
+    <div>
+        @Html.ActionLink("Dodaj nowy wynajem", "Create", null, new { @class = "my-custom-btn fw-bold" })
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+        @Html.ActionLink("Zobacz Archiwum", "Archiwum", null, new { @class = "my-custom-btn fw-bold" })
+
+        @using (Html.BeginForm("CzyscHistorie", "Wynajmy", FormMethod.Post, new { style = "margin: 0;" }))
+        {
+            @Html.AntiForgeryToken()
+            <button type="submit" class="my-custom-btn fw-bold" onclick="return confirm('Czy na pewno chcesz zarchiwizować i przenieść do archiwum wpisy starsze niż dzisiaj?');">
+                <i class="glyphicon glyphicon-trash"></i> Uruchom archiwizację bazy (starsze niż dzisiaj)
+            </button>
+    }
+    </div>
+
+</div>
+
+<table class="table table-striped table-hover w-100" style="table-layout: auto;">
     <thead class="table-dark">
         <tr>
             <th>Klient (Imię i Nazwisko)</th>
             <th>Nazwa sprzętu</th>
             <th>Data wynajmu</th>
             <th>Planowany zwrot</th>
-            <th>Akcje</th>
+
+            <th style="width: 1%; white-space: nowrap; padding-left: 12px;" class="text-start">Akcje</th>
         </tr>
     </thead>
     <tbody>
@@ -38,8 +45,9 @@
                 <td>@item.Sprzets.Nazwa</td>
                 <td>@item.DataWynajmu.ToShortDateString()</td>
                 <td>@(item.DataZwrotu.HasValue ? item.DataZwrotu.Value.ToShortDateString() : "Brak danych")</td>
-                <td>
-                    @using (Html.BeginForm("Delete", "Wynajmy", new { id = item.Id }, FormMethod.Post, new { onsubmit = "return confirm('Czy na pewno chcesz usunąć ten wynajem i zwrócić sprzęt do magazynu?');", style = "display:inline;" }))
+
+                <td style="white-space: nowrap; padding-left: 12px;" class="text-start">
+                    @using (Html.BeginForm("Delete", "Wynajmy", new { id = item.Id }, FormMethod.Post, new { onsubmit = "return confirm('Czy na pewno chcesz usunąć ten wynajem i zwrócić sprzęt do magazynu?');", style = "display:inline; margin: 0; padding: 0;" }))
                     {
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-danger btn-sm">Usuń wynajem</button>

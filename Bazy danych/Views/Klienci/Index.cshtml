@@ -5,6 +5,42 @@
     ViewBag.Title = "Klienci";
 }
 
+@section scripts {
+    <script>
+        document.querySelectorAll('.delete-client-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault(); // Zatrzymanie przeładowania strony
+
+                // Standardowe pytania potwierdzające użytkownika
+                if (!confirm('Czy na pewno chcesz usunąć tego klienta?')) {
+                    return;
+                }
+
+                const formData = new FormData(this);
+
+                // Wysyłanie żądania w tle (AJAX)
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Jeśli usunięto pomyślnie -> odświeża stronę, aby klient zniknął z listy
+                            window.location.reload();
+                        } else {
+                            // Jeśli jest bląd (Klient ma wynajmy) -> Wyświetlony alert window
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert('Wystąpił nieoczekiwany błąd komunikacji.');
+                    });
+            });
+        });
+    </script>
+}
+
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Klienci</h2>
@@ -75,37 +111,3 @@
         </div>
     </div>
 </div>
-<script>
-    document.querySelectorAll('.delete-client-form').forEach(form => {
-        form.addEventListener('submit', function (e) {
-            // 1. Zatrzymujemy standardowe przeładowanie strony
-            e.preventDefault();
-
-            // 2. Standardowe pytania potwierdzające użytkownika
-            if (!confirm('Czy na pewno chcesz usunąć tego klienta?')) {
-                return;
-            }
-
-            const formData = new FormData(this);
-
-            // 3. Wysyłanie żądania w tle (AJAX)
-            fetch(this.action, {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Jeśli usunięto pomyślnie -> odświeżamy stronę, aby klient zniknął z listy
-                        window.location.reload();
-                    } else {
-                        // JEŚLI JEST BŁĄD (Klient ma wynajmy) -> WYŚWIETLAMY ALERT WINDOW
-                        alert(data.message);
-                    }
-                })
-                .catch(error => {
-                    alert('Wystąpił nieoczekiwany błąd komunikacji.');
-                });
-        });
-    });
-</script>

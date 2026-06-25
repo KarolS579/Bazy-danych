@@ -17,10 +17,10 @@ namespace Bazy_danych
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 LoginPath = new PathString("/Account/Login"),
 
-                // 1. Set how long the session remains valid during inactivity (e.g., 15 minutes)
+                // Set how long the session remains valid during inactivity
                 ExpireTimeSpan = TimeSpan.FromMinutes(15),
 
-                // 2. Resets the 15-minute timer every time the user clicks or reloads a page
+                // Resets the 15-minute timer every time the user clicks or reloads a page
                 SlidingExpiration = true
             });
         }

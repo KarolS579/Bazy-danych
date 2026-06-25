@@ -1,5 +1,5 @@
 ﻿using System;
-using Bazy_danych.Models; // Upewnij się, że namespace jest poprawny
+using Bazy_danych.Models;
 
 namespace Bazy_danych
 {
@@ -9,7 +9,7 @@ namespace Bazy_danych
         {
             try
             {
-                // 1. USUWANIE STAREGO TRIGGERA
+                // USUWANIE STAREGO TRIGGERA
                 context.Database.ExecuteSqlCommand(@"
                     IF OBJECT_ID('[dbo].[trg_AutomatycznyStatusPoWynajmie]', 'TR') IS NOT NULL
                     BEGIN
@@ -17,7 +17,7 @@ namespace Bazy_danych
                     END
                 ");
 
-                // 2. TWORZENIE NOWEGO, NIEZAWODNEGO TRIGGERA
+                // TWORZENIE NOWEGO, NIEZAWODNEGO TRIGGERA
                 context.Database.ExecuteSqlCommand(@"
                     CREATE TRIGGER [dbo].[trg_AutomatycznyStatusPoWynajmie]
                     ON [dbo].[Wynajems]
