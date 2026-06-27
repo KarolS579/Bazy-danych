@@ -48,6 +48,34 @@ namespace Bazy_danych
                         END
                     END
                 ");
+
+                context.Database.ExecuteSqlCommand(@"CREATE TRIGGER TR_Magazyny_StatusUpdate
+                    ON Magazyns
+                    AFTER INSERT, UPDATE
+                    AS
+                    BEGIN
+                        SET NOCOUNT ON;
+    
+                        UPDATE m
+                        SET m.Status = CASE 
+                            WHEN m.ZajeteMiejsce >= m.Pojemnosc THEN 'Przepełniony'
+                            ELSE 'Aktywny'
+                        END
+                        FROM Magazyns m
+                        INNER JOIN inserted i ON m.Id = i.Id;
+                    END
+                ");
+
+                context.Database.ExecuteSqlCommand(@"
+                    IF NOT EXISTS (
+                        SELECT * FROM sys.columns 
+                        WHERE object_id = OBJECT_ID('dbo.Sprzets')
+                        AND name = 'NumerSeryjny'
+                    )
+                    BEGIN
+                        ALTER TABLE dbo.Sprzets ADD NumerSeryjny NVARCHAR(50) NULL;
+                    END
+                ");
             }
             catch (Exception ex)
             {

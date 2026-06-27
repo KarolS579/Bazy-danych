@@ -28,40 +28,22 @@ namespace Bazy_danych.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult AddWarehouse(Magazyn model)
         {
-            if (ModelState["ZajeteMiejsce"] != null && ModelState["ZajeteMiejsce"].Errors.Count > 0)
+            // Czyścimy błędy walidacji dla pola ZajeteMiejsce, ponieważ zawsze przy dodawaniu wynosi 0
+            if (ModelState["ZajeteMiejsce"] != null)
             {
                 ModelState["ZajeteMiejsce"].Errors.Clear();
-                ModelState.AddModelError("ZajeteMiejsce", "Wprowadzona pojemność jest zbyt duża lub nieprawidłowa! Maksymalna liczba to 2147483647");
-            }
-
-            if (ModelState["Pojemnosc"] != null && ModelState["Pojemnosc"].Errors.Count > 0)
-            {
-                ModelState["Pojemnosc"].Errors.Clear();
-                ModelState.AddModelError("Pojemnosc", "Wprowadzona pojemność jest zbyt duża lub nieprawidłowa! Maksymalna liczba to 2147483647");
             }
 
             if (ModelState.IsValid)
             {
-                bool nazwaIstnieje = db.Magazyny.Any(m => m.Nazwa.Equals(model.Nazwa, StringComparison.OrdinalIgnoreCase));
-
-                if (nazwaIstnieje)
-                {
-                    ModelState.AddModelError("Duplikat", "Magazyn o podanej nazwie już istnieje w bazie danych!");
-                    return View(model);
-                }
-
-                if (model.ZajeteMiejsce > model.Pojemnosc)
-                {
-                    ModelState.AddModelError("ZajeteMiejsce", "Zajęte miejsce nie może być większe niż pojemność.");
-                    return View(model);
-                }
-
+                model.ZajeteMiejsce = 0; // Nowy magazyn jest zawsze pusty
                 model.CreatedDate = DateTime.Now;
+                model.Status = "Aktywny";
+
                 db.Magazyny.Add(model);
                 db.SaveChanges();
                 return RedirectToAction("Warehouses");
             }
-
             return View(model);
         }
 
@@ -85,42 +67,29 @@ namespace Bazy_danych.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditWarehouse(Magazyn model)
         {
-            if (ModelState["ZajeteMiejsce"] != null && ModelState["ZajeteMiejsce"].Errors.Count > 0)
-            {
-                ModelState["ZajeteMiejsce"].Errors.Clear();
-                ModelState.AddModelError("ZajeteMiejsce", "Wprowadzona pojemność jest zbyt duża lub nieprawidłowa! Maksymalna liczba to 2147483647");
-            }
-
-            if (ModelState["Pojemnosc"] != null && ModelState["Pojemnosc"].Errors.Count > 0)
-            {
-                ModelState["Pojemnosc"].Errors.Clear();
-                ModelState.AddModelError("Pojemnosc", "Wprowadzona pojemność jest zbyt duża lub nieprawidłowa! Maksymalna liczba to 2147483647");
-            }
-
             if (ModelState.IsValid)
             {
-                if (model.ZajeteMiejsce > model.Pojemnosc)
+                // Liczymy rzeczywistą liczbę sprzętów podpiętych pod ten magazyn
+                int rzeczywistaLiczbaEq = db.Sprzets.Count(s => s.MagazynId == model.Id);
+
+                // UI ERROR: Próba zmniejszenia pojemności poniżej liczby posiadanych maszyn
+                if (model.Pojemnosc < rzeczywistaLiczbaEq)
                 {
-                    ModelState.AddModelError("ZajeteMiejsce", "Zajęte miejsce nie może być większe niż pojemność.");
+                    ModelState.AddModelError("Pojemnosc", $"Nie można ustawić pojemności mniejszej niż liczba powiązanych sprzętów! Aktualna ilość sprzętów w tym magazynie: {rzeczywistaLiczbaEq}.");
                     return View(model);
                 }
 
                 var warehouse = db.Magazyny.Find(model.Id);
-                if (warehouse == null)
-                {
-                    return HttpNotFound();
-                }
+                if (warehouse == null) return HttpNotFound();
 
                 warehouse.Nazwa = model.Nazwa;
                 warehouse.Lokalizacja = model.Lokalizacja;
                 warehouse.Pojemnosc = model.Pojemnosc;
-                warehouse.ZajeteMiejsce = model.ZajeteMiejsce;
-                warehouse.Status = model.Status;
+                warehouse.ZajeteMiejsce = rzeczywistaLiczbaEq; // Wymuszenie aktualnej, wyliczonej wartości
 
-                db.SaveChanges();
+                db.SaveChanges(); // Odpala trigger i aktualizuje status (Aktywny/Przepełniony)
                 return RedirectToAction("Warehouses");
             }
-
             return View(model);
         }
 

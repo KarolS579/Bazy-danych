@@ -22,8 +22,17 @@ namespace Bazy_danych.Controllers
 
         public ActionResult Create()
         {
+            ViewBag.SprzetId = db.Sprzets
+                .Where(s => s.Status == "Dostępny") // Pobieramy tylko sprzęty gotowe do wypożyczenia/serwisu
+                .ToList() // Pobieramy dane do pamięci, aby móc sformatować tekst w C#
+                .Select(s => new SelectListItem
+                {
+                    Value = s.Id.ToString(),
+                    // Łączymy numer seryjny z nazwą w jeden ciąg tekstowy
+                    Text = $"[{s.NumerSeryjny}] {s.Nazwa} ({s.Kategoria})"
+                })
+                .ToList();
 
-            ViewBag.SprzetId = new SelectList(db.Sprzets.Where(s => s.Status == "Dostępny"), "Id", "Nazwa");
             return View();
         }
 

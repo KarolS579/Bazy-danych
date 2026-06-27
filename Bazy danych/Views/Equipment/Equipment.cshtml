@@ -52,9 +52,11 @@
                 <table class="table table-hover">
                     <thead class="table-dark">
                         <tr>
-                            <th>Nazwa</th>
+                            <th>Numer Seryjny</th> @* Nowa kolumna *@
+                            <th>Nazwa urządzenia</th>
                             <th>Kategoria</th>
-                            <th>Cena (PLN/doba)</th>
+                            <th>Lokalizacja (Magazyn)</th>
+                            <th>Cena wynajmu PLN/doba</th>
                             <th>Status</th>
                             <th>Data dodania</th>
                             <th>Akcje</th>
@@ -64,8 +66,21 @@
                         @foreach (var item in Model)
                         {
                             <tr>
+                                <td>
+                                    <code class="text-dark fw-bold bg-light p-1 rounded border" style="font-size: 0.9em;">@item.NumerSeryjny</code>
+                                </td>
                                 <td>@item.Nazwa</td>
                                 <td>@item.Kategoria</td>
+                                <td>
+                                    @if (item.Magazyn != null)
+                                    {
+                                        <span class="badge bg-info text-dark fw-bold">@item.Magazyn.Nazwa</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small"><i>Brak lokalizacji</i></span>
+                                    }
+                                </td>
                                 <td>@item.Cena_wynajmu.ToString("0.00")</td>
                                 <td>
                                     @{
@@ -101,7 +116,7 @@
                                     {
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@item.Id" />
-                                        <button type="button" class="btn btn-sm btn-usun-sprzet btn-outline-danger" data-id="@item.Id">Usuń</button>                                    }
+                                        <button type="button" class="btn btn-sm btn-usun-sprzet btn-outline-danger" data-id="@item.Id">Usuń</button>}
                                 </td>
                             </tr>
                         }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Bazy_danych.Models
 {
+    [Table("Magazyns")]
     public class Magazyn
     {
         public int Id { get; set; }

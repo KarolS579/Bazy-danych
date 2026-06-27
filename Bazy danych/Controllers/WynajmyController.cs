@@ -25,8 +25,7 @@ namespace Bazy_danych.Controllers
         {
             db.Configuration.ProxyCreationEnabled = false;
 
-            // IndexOf zwraca -1, jeśli tekst NIE zostanie znaleziony. 
-            // Warunek < 0 oznacza dokładnie: "ten status NIE zawiera słowa Wynaj ani Serwis"
+            // 1. Pobieramy przefiltrowaną listę sprzętów z bazy danych
             var dostepneSprzety = db.Sprzets
                                     .AsNoTracking()
                                     .ToList()
@@ -35,8 +34,15 @@ namespace Bazy_danych.Controllers
                                                s.Status.IndexOf("Serwis", StringComparison.OrdinalIgnoreCase) < 0))
                                     .ToList();
 
-            ViewBag.SprzetId = new SelectList(dostepneSprzety, "Id", "Nazwa");
+            // 2. ŁĄCZENIE PARAMETRÓW: Mapujemy sprzęty na listę elementów SelectListItem,
+            // łącząc NumerSeryjny z Nazwą w formacie: [Numer] Nazwa
+            ViewBag.SprzetId = dostepneSprzety.Select(s => new SelectListItem
+            {
+                Value = s.Id.ToString(),
+                Text = $"[{s.NumerSeryjny}] {s.Nazwa}"
+            }).ToList();
 
+            // 3. Przygotowanie listy klientów (bez zmian)
             var listaKlientow = db.Klienci.AsNoTracking().ToList().Select(k => new {
                 Id = k.Id,
                 PelneDane = k.Imie + " " + k.Nazwisko
@@ -58,8 +64,6 @@ namespace Bazy_danych.Controllers
 
                 return RedirectToAction("Index");
             }
-
-            // W przypadku błędu walidacji – identyczna, poprawiona logika z < 0
             var dostepneSprzety = db.Sprzets
                                     .AsNoTracking()
                                     .ToList()
@@ -68,7 +72,12 @@ namespace Bazy_danych.Controllers
                                                s.Status.IndexOf("Serwis", StringComparison.OrdinalIgnoreCase) < 0))
                                     .ToList();
 
-            ViewBag.SprzetId = new SelectList(dostepneSprzety, "Id", "Nazwa", wynajem.SprzetId);
+            ViewBag.SprzetId = dostepneSprzety.Select(s => new SelectListItem
+            {
+                Value = s.Id.ToString(),
+                Text = $"[{s.NumerSeryjny}] {s.Nazwa}",
+                Selected = (s.Id == wynajem.SprzetId)
+            }).ToList();
 
             var listaKlientow = db.Klienci.AsNoTracking().ToList().Select(k => new { Id = k.Id, PelneDane = k.Imie + " " + k.Nazwisko });
             ViewBag.KlientId = new SelectList(listaKlientow, "Id", "PelneDane", wynajem.KlientId);

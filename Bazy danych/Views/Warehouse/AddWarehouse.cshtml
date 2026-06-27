@@ -52,12 +52,6 @@
                         </div>
 
                         <div class="mb-3">
-                            @Html.LabelFor(m => m.ZajeteMiejsce, new { @class = "form-label" })
-                            @Html.TextBoxFor(m => m.ZajeteMiejsce, new { @class = "form-control", type = "number", min = "0" })
-                            @Html.ValidationMessageFor(m => m.ZajeteMiejsce, "", new { @class = "text-danger small" })
-                        </div>
-
-                        <div class="mb-3">
                             @Html.LabelFor(m => m.Status, new { @class = "form-label" })
                             @Html.DropDownListFor(m => m.Status, new SelectList(new[] { "Aktywny", "Przepełniony", "Nieaktywny" }), "Wybierz status", new { @class = "form-select" })
                             @Html.ValidationMessageFor(m => m.Status, "", new { @class = "text-danger small" })

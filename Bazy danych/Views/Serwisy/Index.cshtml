@@ -25,7 +25,7 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.Sprzet.Nazwa</td>
+                <td>[@item.Sprzet.NumerSeryjny] @item.Sprzet.Nazwa</td>
                 <td>@item.DataRozpoczecia.ToShortDateString()</td>
                 <td>@(item.DataZakonczenia.HasValue ? item.DataZakonczenia.Value.ToShortDateString() : "W trakcie naprawy")</td>
                 <td>@item.Opis</td>
