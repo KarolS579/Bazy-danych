@@ -1,0 +1,250 @@
+﻿@model Bazy_danych.Models.GlobalSearchViewModel
+
+@if (Model.ZnalezionySprzet.Any())
+{
+    <div class="card mb-4 border-primary shadow-sm">
+        <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-middle">
+            <h6 class="mb-0 align-self-center"><i class="bi bi-tools"></i> Sprzęt i Urządzenia (@Model.ZnalezionySprzet.Count)</h6>
+            <a href="@Url.Action("Porownaj", "Search")" class="btn btn-light btn-sm fw-bold text-primary py-0">
+                <i class="bi bi-arrow-left-right"></i> Otwórz porównywarkę (@(Model.PorownywarkaIds?.Count ?? 0))
+            </a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Numer Seryjny</th>
+                        <th>Nazwa</th>
+                        <th>Kategoria</th>
+                        <th>Magazyn</th>
+                        <th>Cena</th>
+                        <th>Status</th>
+                        <th class="text-center">Porównaj</th>
+                        <th>Akcja</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ZnalezionySprzet)
+                    {
+                        <tr>
+                            <td><code class="text-dark fw-bold bg-light p-1 rounded border">@item.NumerSeryjny</code></td>
+                            <td><strong>@item.Nazwa</strong></td>
+                            <td>@item.Kategoria</td>
+                            <td><i class="bi bi-geo-alt-fill text-danger"></i> @(item.Magazyn != null ? item.Magazyn.Nazwa : "Brak przypisania")</td>
+                            <td class="fw-bold text-success">@item.Cena_wynajmu.ToString("C")</td>
+                            <td>
+                                <span class="badge @(item.Status == "Dostępny" ? "bg-success" : "bg-warning text-dark")">@item.Status</span>
+                            </td>
+                            <td class="text-center">
+                                @if (item.Status == "Dostępny")
+                                {
+                                    if (Model.PorownywarkaIds.Contains(item.Id))
+                                    {
+                                        <button class="btn btn-sm btn-danger btn-toggle-compare" data-id="@item.Id" data-action="usun">
+                                            <i class="bi bi-x-circle"></i> Usuń
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-outline-success btn-toggle-compare" data-id="@item.Id" data-action="dodaj">
+                                            <i class="bi bi-plus-circle"></i> Dodaj
+                                        </button>
+                                    }
+                                }
+                                else
+                                {
+                                    <small class="text-muted">-</small>
+                                }
+                            </td>
+                            <td>
+                                <a href="@Url.Action("EditEquipment", "Equipment", new { id = item.Id })" class="btn btn-sm btn-outline-secondary">Zobacz</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+@* --- SEKCJA: KLIENCI --- *@
+@if (Model.ZnalezieniKlienci.Any())
+{
+    <div class="card mb-4 border-success">
+
+        <div class="card-header bg-success text-white py-2">
+            <h6 class="mb-0"><i class="bi bi-people-fill"></i> Klienci (@Model.ZnalezieniKlienci.Count)</h6>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm align-middle mb-0">
+                <thead class="table-light">
+                    <tr><th>Imię i Nazwisko</th><th>Firma</th><th>Akcja</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ZnalezieniKlienci)
+                    {
+                        <tr>
+                            <td>@item.Imie @item.Nazwisko</td>
+                            <td>@item.Firma</td>
+                            <td><a href="@Url.Action("Details", "Klienci", new { id = item.Id })" class="btn btn-sm btn-outline-success py-0">Szczegóły</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@* --- SEKCJA: WYNAJMY --- *@
+@if (Model.ZnalezioneWynajmy.Any())
+{
+    <div class="card mb-4 border-info">
+        <div class="card-header bg-info text-dark py-2">
+            <h6 class="mb-0"><i class="bi bi-journal-text"></i> Wynajmy (@Model.ZnalezioneWynajmy.Count)</h6>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm align-middle mb-0">
+                <thead class="table-light">
+                    <tr><th>Sprzęt</th><th>Klient</th><th>Firma</th><th>Data</th><th>Akcja</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ZnalezioneWynajmy)
+                    {
+                        <tr>
+                            <td>
+                                @if (item.Sprzets != null)
+                                {
+                                    <span class="text-secondary fw-bold">[@item.Sprzets.NumerSeryjny]</span> @item.Sprzets.Nazwa
+                                }
+                                else
+                                {
+                                    <span class="text-muted">[Brak sprzętu]</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Klient != null)
+                                {
+                                    <span>@item.Klient.Imie @item.Klient.Nazwisko</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Brak danych klienta</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Klient.Firma != null)
+                                {
+                                    @item.Klient.Firma
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Brak</span>
+                                }
+                            </td>
+                            <td>@item.DataWynajmu.ToShortDateString()</td>
+                            <td><a href="@Url.Action("Details", "Wynajmy", new { id = item.Id })" class="btn btn-sm btn-outline-info py-0">Szczegóły</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@* --- SEKCJA: SERWIS --- *@
+@if (Model.ZnalezioneSerwisy.Any())
+{
+    <div class="card mb-4 border-danger">
+        <div class="card-header bg-danger text-white py-2">
+            <h6 class="mb-0"><i class="bi bi-wrench-adjustable"></i> Serwis (@Model.ZnalezioneSerwisy.Count)</h6>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover table-sm align-middle mb-0">
+                <thead class="table-light">
+                    <tr><th>Sprzęt</th><th>Opis</th><th>Akcja</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ZnalezioneSerwisy)
+                    {
+                        <tr>
+                            <td>
+                                @if (item.Sprzet != null)
+                                {
+                                    <span class="text-danger fw-bold">[@item.Sprzet.NumerSeryjny]</span> @item.Sprzet.Nazwa
+                                }
+                                else
+                                {
+                                    <span class="text-muted">[Brak sprzętu]</span>
+                                }
+                            </td>
+                            <td>@item.Opis</td>
+                            <td><a href="@Url.Action("Details", "Serwis", new { id = item.Id })" class="btn btn-sm btn-outline-danger py-0">Karta</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@* --- SEKCJA: MAGAZYNY (STYL IDENTYCZNY Z SERWISEM + ZAPIS LICZBOWY) --- *@
+@if (Model.WybranyTyp == "Wszystko" || Model.WybranyTyp == "Magazyny")
+{
+    if (Model.ZnalezioneMagazyny != null && Model.ZnalezioneMagazyny.Any())
+    {
+        <div class="card mb-4 border-dark shadow-sm">
+            <div class="card-header bg-dark text-white py-2">
+                <h6 class="mb-0"><i class="bi bi-geo-alt"></i> Magazyny (@Model.ZnalezioneMagazyny.Count)</h6>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-sm align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nazwa Magazynu</th>
+                            <th>Lokalizacja</th>
+                            <th>Pojemność</th>
+                            <th style="width: 25%;">Zajętość</th>
+                            <th>Status</th>
+                            <th>Data dodania</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ZnalezioneMagazyny)
+                        {
+                            var occupancy = item.Pojemnosc > 0 ? (int)Math.Round((item.ZajeteMiejsce * 100.0) / item.Pojemnosc) : 0;
+                            var barClass = occupancy >= 90 ? "bg-danger" : (occupancy >= 70 ? "bg-warning" : "bg-success");
+
+                            <tr>
+                                <td><strong>@item.Nazwa</strong></td>
+                                <td>@item.Lokalizacja</td>
+                                <td>@item.Pojemnosc</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 15px; background-color: #e9ecef; border-radius: 4px;">
+                                            <div class="progress-bar @barClass" role="progressbar" style="width: @occupancy%" aria-valuenow="@occupancy" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <small class="fw-bold text-muted text-nowrap">@item.ZajeteMiejsce / @item.Pojemnosc</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (item.Pojemnosc == 0 || item.ZajeteMiejsce < item.Pojemnosc)
+                                    {
+                                        <span class="badge bg-success text-white">Aktywny</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-black text-white">Zapełniony</span>
+                                    }
+                                </td>
+                                <td class="text-muted small">@item.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else if (Model.WybranyTyp == "Magazyny")
+    {
+        <div class="alert alert-warning border-0 shadow-sm mb-4"><i class="bi bi-info-circle me-2"></i> Brak niezależnych magazynów spełniających kryteria wyszukiwania.</div>
+    }
+}
