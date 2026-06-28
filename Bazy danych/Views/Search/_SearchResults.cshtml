@@ -226,7 +226,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    @if (item.Pojemnosc == 0 || item.ZajeteMiejsce < item.Pojemnosc)
+                                    @if (item.Pojemnosc > 0 && item.ZajeteMiejsce < item.Pojemnosc)
                                     {
                                         <span class="badge bg-success text-white">Aktywny</span>
                                     }

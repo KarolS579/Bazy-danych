@@ -39,7 +39,7 @@
 
                         <div class="mb-3">
                             @Html.LabelFor(m => m.Status, new { @class = "form-label" })
-                            @Html.DropDownListFor(m => m.Status, new SelectList(new[] { "Aktywny", "Przepełniony", "Nieaktywny" }, Model.Status), new { @class = "form-select" })
+                            @Html.DropDownListFor(m => m.Status, new SelectList(new[] { "Aktywny", "Zapełniony", "Nieaktywny" }, Model.Status), new { @class = "form-select" })
                             @Html.ValidationMessageFor(m => m.Status, "", new { @class = "text-danger small" })
                         </div>
 

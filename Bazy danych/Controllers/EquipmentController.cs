@@ -28,7 +28,7 @@ namespace Bazy_danych.Controllers
 
             foreach (var m in magazyny)
             {
-                bool isFull = m.Status == "Przepełniony" || m.ZajeteMiejsce >= m.Pojemnosc;
+                bool isFull = m.Status == "Zapełniony" || m.ZajeteMiejsce >= m.Pojemnosc;
 
                 // Jeśli magazyn jest pełny, a NIE JEST to aktualnie wybrany magazyn edytowanego sprzętu -> blokujemy go
                 bool shouldDisable = isFull && (selectedId == null || m.Id != selectedId);
@@ -36,7 +36,7 @@ namespace Bazy_danych.Controllers
                 var item = new SelectListItem
                 {
                     Value = m.Id.ToString(),
-                    Text = $"{m.Nazwa} (Zajęte: {m.ZajeteMiejsce}/{m.Pojemnosc})" + (isFull ? " - [PRZEPEŁNIONY]" : ""),
+                    Text = $"{m.Nazwa} (Zajęte: {m.ZajeteMiejsce}/{m.Pojemnosc})" + (isFull ? " - [ZAPEŁNIONY]" : ""),
                     Selected = (m.Id == selectedId)
                 };
 
@@ -123,7 +123,7 @@ namespace Bazy_danych.Controllers
                         if (model.MagazynId.HasValue)
                         {
                             var mag = db.Magazyny.Find(model.MagazynId.Value);
-                            if (mag != null && (mag.Status == "Przepełniony" || mag.ZajeteMiejsce >= mag.Pojemnosc))
+                            if (mag != null && (mag.Status == "Zapełniony" || mag.ZajeteMiejsce >= mag.Pojemnosc))
                             {
                                 ModelState.AddModelError("MagazynId", "Wybrany magazyn jest aktualnie przepełniony!");
                                 PrepareMagazynDropdown(model.MagazynId);
@@ -215,7 +215,7 @@ namespace Bazy_danych.Controllers
                         if (nowyMagazynId.HasValue && nowyMagazynId != staryMagazynId)
                         {
                             var magNowy = db.Magazyny.Find(nowyMagazynId.Value);
-                            if (magNowy != null && (magNowy.Status == "Przepełniony" || magNowy.ZajeteMiejsce >= magNowy.Pojemnosc))
+                            if (magNowy != null && (magNowy.Status == "Zapełniony" || magNowy.ZajeteMiejsce >= magNowy.Pojemnosc))
                             {
                                 ModelState.AddModelError("MagazynId", "Magazyn docelowy jest przepełniony! Nie można tam przenieść sprzętu.");
                                 PrepareMagazynDropdown(model.MagazynId);

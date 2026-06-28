@@ -209,7 +209,17 @@ namespace Bazy_danych.Controllers
 
                 if (!string.IsNullOrEmpty(magazynStatus))
                 {
-                    qMagazyny = qMagazyny.Where(m => m.Status == magazynStatus);
+                    if (magazynStatus == "Zapełniony")
+                    {
+                        // A warehouse is 'Zapełniony' if occupied space is greater or equal to its capacity
+                        qMagazyny = qMagazyny.Where(m => m.ZajeteMiejsce >= m.Pojemnosc);
+                    }
+                    else if (magazynStatus == "Aktywny")
+                    {
+                        // A warehouse is 'Aktywny' if it has positive capacity and available space
+                        qMagazyny = qMagazyny.Where(m => m.Pojemnosc > 0 && m.ZajeteMiejsce < m.Pojemnosc);
+                    }
+                    // No 'else' needed for 'Wszystkie statusy' as the filter is only applied if magazynStatus is not empty.
                 }
 
                 if (magazynDataOd.HasValue) qMagazyny = qMagazyny.Where(m => m.CreatedDate >= magazynDataOd.Value);

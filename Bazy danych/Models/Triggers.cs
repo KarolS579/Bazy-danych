@@ -58,7 +58,7 @@ namespace Bazy_danych
     
                         UPDATE m
                         SET m.Status = CASE 
-                            WHEN m.ZajeteMiejsce >= m.Pojemnosc THEN 'Przepełniony'
+                            WHEN m.ZajeteMiejsce >= m.Pojemnosc THEN 'Zapełniony'
                             ELSE 'Aktywny'
                         END
                         FROM Magazyns m

@@ -1,4 +1,4 @@
-﻿@* encoding: utf-8 *@
+﻿﻿@* encoding: utf-8 *@
 @model Bazy_danych.Models.Sprzet
 
 @{
@@ -6,12 +6,13 @@
 }
 
 @section scripts {
-    <script>document.addEventListener("DOMContentLoaded", function () {
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
             var select = document.getElementById("magazyn-select");
             if (select) {
                 for (var i = 0; i < select.options.length; i++) {
                     var option = select.options[i];
-                    if (option.text.includes("[PRZEPEŁNIONY]") && !option.selected) {
+                    if (option.text.includes("ZAPEŁNIONY]") && !option.selected) {
                         option.disabled = true;
                         option.style.color = "#a0a0a0";
                         option.style.backgroundColor = "#f0f0f0";
