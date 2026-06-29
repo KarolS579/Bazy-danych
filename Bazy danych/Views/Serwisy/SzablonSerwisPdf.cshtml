@@ -1,0 +1,40 @@
+﻿@model Bazy_danych.Models.Serwis
+@{ Layout = null; }
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Karta Serwisowa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            line-height: 1.5;
+            color: #000;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 15px;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">POTWIERDZENIE SERWISU #@Model.Id</div>
+    <div class="section"><span class="bold">Sprzęt:</span> [@Model.Sprzet.NumerSeryjny] @Model.Sprzet.Nazwa (@Model.Sprzet.Kategoria)</div>
+    <div class="section"><span class="bold">Data rozpoczęcia:</span> @Model.DataRozpoczecia.ToShortDateString()</div>
+    <div class="section"><span class="bold">Data zakończenia:</span> @(Model.DataZakonczenia.HasValue ? Model.DataZakonczenia.Value.ToShortDateString() : "W trakcie naprawy")</div>
+    <div class="section"><span class="bold">Opis usterki / uwagi:</span><br />@(string.IsNullOrEmpty(Model.Opis) ? "Brak opisu." : Model.Opis)</div>
+</body>
+</html>

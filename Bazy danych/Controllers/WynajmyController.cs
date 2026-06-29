@@ -4,10 +4,11 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Bazy_danych.Models;
+using Rotativa; // <--- POTRZEBNE DO GENEROWANIA PDF
 
 namespace Bazy_danych.Controllers
 {
-    [Authorize] // Dostęp tylko dla zalogowanych pracowników/adminów
+    [Authorize] // Dostęp do całego kontrolera tylko dla zalogowanych pracowników/adminów
     public class WynajmyController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -15,18 +16,62 @@ namespace Bazy_danych.Controllers
         // LISTA WYNAJMÓW (Index)
         public ActionResult Index()
         {
-            var query = db.Wynajmy.Include(w => w.Klient).Include(w => w.Sprzets);
+            // .Include automatycznie dołącza powiązane dane klienta i sprzętu w jednym zapytaniu SQL
+            var wynajmy = db.Wynajmy.Include(w => w.Klient).Include(w => w.Sprzets).ToList();
+            return View(wynajmy);
+        }
 
-            if (!User.IsInRole("Admin"))
+        // 1. AKCJA WYWOŁYWANA PRZEZ PRZYCISK - GENERUJE I POBIERA PDF
+        public ActionResult DrukujPdf(int id)
+        {
+            var wynajem = db.Wynajmy
+                            .Include(w => w.Klient)
+                            .Include(w => w.Sprzets)
+                            .FirstOrDefault(w => w.Id == id);
+
+            if (wynajem == null)
             {
-                string currentEmail = (User.Identity.Name ?? "").Trim().ToLower();
-                var profilKlienta = db.Klienci.ToList().FirstOrDefault(k => (k.Email ?? "").Trim().ToLower() == currentEmail);
-                int klId = profilKlienta != null ? profilKlienta.Id : -1;
-
-                return View(query.Where(w => w.KlientId == klId).ToList());
+                return HttpNotFound();
             }
 
-            return View(query.ToList());
+            // Zwracamy widok 'SzablonPdf' jako gotowy plik PDF do pobrania
+            return new ActionAsPdf("SzablonPdf", new { id = id })
+            {
+                FileName = $"Potwierdzenie_Wynajmu_Nr_{wynajem.Id}.pdf"
+            };
+        }
+
+        // 2. AKCJA POMOCNICZA - DOSTARCZA DANE DO SZABLONU PDF I LICZY CENĘ
+        [AllowAnonymous] // <--- KLUCZOWA ZMIANA: Pozwala Rotativie odczytać dane szablonu bez blokady logowania
+        public ActionResult SzablonPdf(int id)
+        {
+            var wynajem = db.Wynajmy
+                            .Include(w => w.Klient)
+                            .Include(w => w.Sprzets)
+                            .FirstOrDefault(w => w.Id == id);
+
+            if (wynajem == null)
+            {
+                return HttpNotFound();
+            }
+
+            // OBLICZANIE CENY KOŃCOWEJ - Zmiana na Twoje pole: Cena_wynajmu
+            decimal cenaZaDzien = wynajem.Sprzets.Cena_wynajmu;
+
+            // Jeśli sprzęt nie został jeszcze zwrócony, liczymy dni od daty wynajmu do dziś
+            DateTime dataKoncowa = wynajem.DataZwrotu ?? DateTime.Now;
+
+            // Obliczamy różnicę w dniach (minimum 1 dzień)
+            int liczbaDni = (dataKoncowa.Date - wynajem.DataWynajmu.Date).Days;
+            if (liczbaDni <= 0) liczbaDni = 1;
+
+            decimal lacznaCena = liczbaDni * cenaZaDzien;
+
+            // Przekazujemy obliczenia do widoku PDF za pomocą ViewBag
+            ViewBag.LiczbaDni = liczbaDni;
+            ViewBag.LacznaCena = lacznaCena;
+
+            return View(wynajem);
         }
 
         // FORMULARZ DODAWANIA (GET)
@@ -34,7 +79,7 @@ namespace Bazy_danych.Controllers
         {
             db.Configuration.ProxyCreationEnabled = false;
 
-            // 1. Pobieramy przefiltrowaną listę sprzętów z bazy danych
+            // 1. Pobieramy przefiltrowaną lista sprzętów z bazy danych
             var dostepneSprzety = db.Sprzets
                                     .AsNoTracking()
                                     .ToList()
@@ -96,7 +141,6 @@ namespace Bazy_danych.Controllers
         // USUWANIE WYNAJMU (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int id)
         {
             var wynajem = db.Wynajmy.Find(id);
@@ -119,7 +163,6 @@ namespace Bazy_danych.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public ActionResult CzyscHistorie()
         {
             // Definicja / Aktualizacja procedury
@@ -129,7 +172,7 @@ namespace Bazy_danych.Controllers
         AS
         BEGIN
             SET NOCOUNT ON;
-                                
+                                        
             BEGIN TRANSACTION;
             BEGIN TRY
                 INSERT INTO dbo.ArchiwumWynajmow (Id, DataWynajmu, DataZwrotu, SprzetId, KlientId, DataArchiwizacji)
@@ -161,7 +204,7 @@ namespace Bazy_danych.Controllers
         END
     ");
 
-            // Pobieranie aktualnej daty i godziny (zgodnie z poprzednią zmianą archiwizacji do teraz)
+            // Pobieranie aktualnej daty i godziny
             DateTime teraz = DateTime.Now.AddDays(-1);
 
             // Wywołanie procedury
@@ -173,7 +216,6 @@ namespace Bazy_danych.Controllers
             return RedirectToAction("Index");
         }
 
-        [Authorize(Roles = "Admin")]
         public ActionResult Archiwum()
         {
             var archiwum = db.ArchiwumWynajmow
@@ -184,6 +226,7 @@ namespace Bazy_danych.Controllers
 
             return View(archiwum);
         }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

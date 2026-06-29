@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Bazy_danych.Models;
+using Rotativa; // <--- POTRZEBNE DO GENEROWANIA PDF
 
 namespace Bazy_danych.Controllers
 {
@@ -12,14 +13,49 @@ namespace Bazy_danych.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-
+        // LISTA SERWISÓW (Index)
         public ActionResult Index()
         {
             var serwisy = db.Serwisy.Include(s => s.Sprzet).ToList();
             return View(serwisy);
         }
 
+        // 1. AKCJA WYWOŁYWANA PRZEZ PRZYCISK - GENERUJE I POBIERA PDF
+        public ActionResult DrukujSerwisPdf(int id)
+        {
+            var serwis = db.Serwisy
+                           .Include(s => s.Sprzet)
+                           .FirstOrDefault(s => s.Id == id);
 
+            if (serwis == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Zwracamy widok 'SzablonSerwisPdf' jako gotowy plik PDF do pobrania
+            return new ActionAsPdf("SzablonSerwisPdf", new { id = id })
+            {
+                FileName = $"Zgloszenie_Serwisowe_Nr_{serwis.Id}.pdf"
+            };
+        }
+
+        // 2. AKCJA POMOCNICZA - DOSTARCZA DANE DO SZABLONU PDF
+        [AllowAnonymous] // Ominięcie blokady logowania dla silnika Rotativa
+        public ActionResult SzablonSerwisPdf(int id)
+        {
+            var serwis = db.Serwisy
+                           .Include(s => s.Sprzet)
+                           .FirstOrDefault(s => s.Id == id);
+
+            if (serwis == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(serwis);
+        }
+
+        // FORMULARZ DODAWANIA (GET)
         public ActionResult Create()
         {
             ViewBag.SprzetId = db.Sprzets
@@ -36,6 +72,7 @@ namespace Bazy_danych.Controllers
             return View();
         }
 
+        // ZAPIS ZGŁOSZENIA (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,DataRozpoczecia,Opis,SprzetId")] Serwis serwis)
@@ -63,6 +100,7 @@ namespace Bazy_danych.Controllers
             return View(serwis);
         }
 
+        // POWRÓT Z SERWISU (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult PowrotZSerwisu(int id)
