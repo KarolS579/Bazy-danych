@@ -117,8 +117,55 @@ a.my-custom-btn, .my-custom-btn {
         color: #000000 !important; /* Font flips to black for accessibility */
     }
 
-    /* --- Disable the orange line effect for specific links --- */
-    .navbar-nav .nav-link.no-underline::after,
-    .navbar-brand.no-underline::after {
-        display: none !important; /* Hides the animated bar completely */
+/* --- Disable the orange line effect for specific links --- */
+.navbar-nav .nav-link.no-underline::after,
+.navbar-brand.no-underline::after {
+    display: none !important; /* Hides the animated bar completely */
+}
+
+/* --- SPROWADZONE I WZMOCNIONE STYLE AUTOCOMPLETE --- */
+#fast-search-wrapper #autocomplete-dropdown {
+    background-color: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(0, 0, 0, 0.15) !important;
+    z-index: 1100 !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    display: none;
+}
+
+    #fast-search-wrapper #autocomplete-dropdown.show {
+        display: block !important;
+    }
+
+#fast-search-wrapper .autocomplete-header {
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px !important;
+    font-weight: 700 !important;
+    color: #6c757d !important;
+    padding: 6px 12px 4px 12px !important;
+    background-color: #f8f9fa !important;
+}
+
+#fast-search-wrapper .autocomplete-item {
+    padding: 8px 12px !important;
+    color: #212529 !important;
+    text-decoration: none !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    cursor: pointer !important;
+    transition: background-color 0.15s ease !important;
+}
+
+    #fast-search-wrapper .autocomplete-item:hover,
+    #fast-search-wrapper .autocomplete-item.active {
+        background-color: rgba(13, 110, 253, 0.08) !important;
+        color: #0d6efd !important;
+        outline: none !important;
+    }
+
+    #fast-search-wrapper .autocomplete-item i {
+        font-size: 14px !important;
     }

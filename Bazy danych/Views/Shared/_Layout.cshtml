@@ -5,10 +5,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - BuildRent</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="~/Content/Site.css" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     @Styles.Render("~/Content/css")
+
+    <link rel="stylesheet" href="~/Content/Site.css" />
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -42,6 +44,18 @@
                 <ul class="navbar-nav ms-auto">
                     @if (User.Identity.IsAuthenticated)
                     {
+
+                        <li class="nav-item ms-lg-2 position-relative me-3" id="fast-search-wrapper">
+                            <div class="input-group input-group-sm" style="width: 260px;">
+                                <span class="input-group-text bg-secondary text-white border-secondary"><i class="bi bi-search"></i></span>
+                                <input type="text" id="layout-fast-search" class="form-control bg-dark text-white border-secondary"
+                                       placeholder="Szybkie szukanie (np. build)..." value="@(Request.QueryString["query"])" autocomplete="off" />
+                            </div>
+                            <div id="autocomplete-dropdown" class="dropdown-menu shadow-lg border-0 rounded-3 mt-1 py-1 position-absolute"
+                                 style="top: 100%; left: 0; width: 100%; min-width: 300px; max-height: 350px; overflow-y: auto; font-size: 13px;">
+                            </div>
+                        </li>
+
                         <li class="nav-item">
                             <span class="nav-link no-underline text-warning">@User.Identity.Name</span>
                         </li>
@@ -75,9 +89,217 @@
         </footer>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var autocompleteTimeout = null;
+            var fastSearchTimeout = null;
+            var autocompleteXhr = null;
+
+            var $input = $('#layout-fast-search');
+            var $dropdown = $('#autocomplete-dropdown');
+
+            if ($input.length === 0 || $dropdown.length === 0) return;
+
+            $input.on('keydown', function (e) {
+                var queryText = $input.val().trim();
+                var $activeItem = $dropdown.find('.autocomplete-item.active');
+
+                if (e.keyCode === 40) { // Arrow Down
+                    e.preventDefault();
+                    var $next = $activeItem.length ? $activeItem.nextAll('.autocomplete-item').first() : $dropdown.find('.autocomplete-item').first();
+                    if ($next.length) {
+                        $dropdown.find('.autocomplete-item').removeClass('active');
+                        $next.addClass('active');
+                        $dropdown.scrollTop($dropdown.scrollTop() + $next.position().top - 40);
+                    }
+                    return;
+                }
+
+                if (e.keyCode === 38) { // Arrow Up
+                    e.preventDefault();
+                    var $prev = $activeItem.length ? $activeItem.prevAll('.autocomplete-item').first() : $dropdown.find('.autocomplete-item').last();
+                    if ($prev.length) {
+                        $dropdown.find('.autocomplete-item').removeClass('active');
+                        $prev.addClass('active');
+                        $dropdown.scrollTop($dropdown.scrollTop() + $prev.position().top - 40);
+                    }
+                    return;
+                }
+
+                if (e.keyCode === 13) { // Enter Key
+                    e.preventDefault();
+                    if ($activeItem.length) {
+                        $activeItem.trigger('mousedown');
+                    } else if (queryText.length > 0) {
+                        var sugerowanyTyp = "Wszystko";
+                        var queryLower = queryText.toLowerCase();
+
+                        if (queryLower.includes("build") || queryLower.includes("magazyn") || queryLower.includes("hala") || queryLower.includes("skład") || queryLower.includes("sklad")) {
+                            sugerowanyTyp = "Magazyny";
+                        } else if (/^[a-zA-Z]{2,}\d+/.test(queryText) || (/^\d+/.test(queryText) && queryText.length > 3)) {
+                            sugerowanyTyp = "Sprzet";
+                        } else if (queryLower.includes("naprawa") || queryLower.includes("serwis") || queryLower.includes("awaria")) {
+                            sugerowanyTyp = "Serwis";
+                        } else if (queryText.length > 3 && !/\d/.test(queryText)) {
+                            sugerowanyTyp = "Klienci";
+                        }
+
+                        $dropdown.removeClass('show');
+                        przekierujLubFiltruj(queryText, sugerowanyTyp);
+                    }
+                    return;
+                }
+
+                if (e.keyCode === 27) { // Escape
+                    $dropdown.removeClass('show');
+                    return;
+                }
+            });
+
+            $input.on('input', function () {
+                var queryText = $input.val().trim();
+
+                if (queryText.length < 2) {
+                    if (autocompleteXhr) { autocompleteXhr.abort(); }
+                    $dropdown.removeClass('show').empty();
+                    return;
+                }
+
+                clearTimeout(autocompleteTimeout);
+                autocompleteTimeout = setTimeout(function () {
+                    if (autocompleteXhr) { autocompleteXhr.abort(); }
+
+                    autocompleteXhr = $.ajax({
+                        url: '@Url.Action("GetAutocompleteSuggestions", "Search")',
+                        type: 'GET',
+                        data: { term: queryText },
+                        dataType: 'json',
+                        success: function (data) {
+                            $dropdown.empty();
+
+                            if (!data || data.length === 0) {
+                                $dropdown.removeClass('show');
+                                return;
+                            }
+
+                            // Grupowanie odebranych danych JSON na dedykowane tablice
+                            var sprzetItems = data.filter(function (i) { return i.Typ === "Sprzet"; });
+                            var magazynItems = data.filter(function (i) { return i.Typ === "Magazyny"; });
+                            var klientItems = data.filter(function (i) { return i.Typ === "Klienci"; });
+                            var serwisItems = data.filter(function (i) { return i.Typ === "Serwis"; });
+                            var wynajemItems = data.filter(function (i) { return i.Typ === "Wynajmy"; });
+
+                            var hasPreviousSection = false;
+
+                            // --- SEKCJA: SPRZĘT ---
+                            if (sprzetItems.length > 0) {
+                                $dropdown.append('<div class="autocomplete-header"><i class="bi bi-tools me-1"></i> Sprzęt i Urządzenia</div>');
+                                sprzetItems.forEach(function (item) {
+                                    var escapedText = $('<div>').text(item.Tekst).html();
+                                    $dropdown.append('<div class="autocomplete-item" data-typ="Sprzet" data-value="' + escapedText + '"><i class="bi bi-box-seam text-primary"></i> <span class="text-truncate">' + escapedText + '</span></div>');
+                                });
+                                hasPreviousSection = true;
+                            }
+
+                            // --- SEKCJA: MAGAZYNY ---
+                            if (magazynItems.length > 0) {
+                                if (hasPreviousSection) $dropdown.append('<div class="dropdown-divider my-1"></div>');
+                                $dropdown.append('<div class="autocomplete-header"><i class="bi bi-building me-1"></i> Magazyny systemowe</div>');
+                                magazynItems.forEach(function (item) {
+                                    var escapedText = $('<div>').text(item.Tekst).html();
+                                    $dropdown.append('<div class="autocomplete-item" data-typ="Magazyny" data-value="' + escapedText + '"><i class="bi bi-geo-alt-fill text-warning"></i> <span class="text-truncate">' + escapedText + '</span></div>');
+                                });
+                                hasPreviousSection = true;
+                            }
+
+                            // --- SEKCJA: KLIENCI ---
+                            if (klientItems.length > 0) {
+                                if (hasPreviousSection) $dropdown.append('<div class="dropdown-divider my-1"></div>');
+                                $dropdown.append('<div class="autocomplete-header"><i class="bi bi-people-fill me-1"></i> Klienci i Firmy</div>');
+                                klientItems.forEach(function (item) {
+                                    var escapedText = $('<div>').text(item.Tekst).html();
+                                    $dropdown.append('<div class="autocomplete-item" data-typ="Klienci" data-value="' + escapedText + '"><i class="bi bi-person-badge text-success"></i> <span class="text-truncate">' + escapedText + '</span></div>');
+                                });
+                                hasPreviousSection = true;
+                            }
+
+                            // --- SEKCJA: SERWIS ---
+                            if (serwisItems.length > 0) {
+                                if (hasPreviousSection) $dropdown.append('<div class="dropdown-divider my-1"></div>');
+                                $dropdown.append('<div class="autocomplete-header"><i class="bi bi-wrench-adjustable me-1"></i> Naprawy i Serwis</div>');
+                                serwisItems.forEach(function (item) {
+                                    var escapedText = $('<div>').text(item.Tekst).html();
+                                    $dropdown.append('<div class="autocomplete-item" data-typ="Serwis" data-value="' + escapedText + '"><i class="bi bi-exclamation-triangle-fill text-danger"></i> <span class="text-truncate">' + escapedText + '</span></div>');
+                                });
+                                hasPreviousSection = true;
+                            }
+
+                            // --- SEKCJA: WYNAJMY ---
+                            if (wynajemItems.length > 0) {
+                                if (hasPreviousSection) $dropdown.append('<div class="dropdown-divider my-1"></div>');
+                                $dropdown.append('<div class="autocomplete-header"><i class="bi bi-calendar-check me-1"></i> Aktywne Wynajmy</div>');
+                                wynajemItems.forEach(function (item) {
+                                    var escapedText = $('<div>').text(item.Tekst).html();
+                                    $dropdown.append('<div class="autocomplete-item" data-typ="Wynajmy" data-value="' + escapedText + '"><i class="bi bi-receipt text-info"></i> <span class="text-truncate">' + escapedText + '</span></div>');
+                                });
+                            }
+
+                            $dropdown.addClass('show');
+                        },
+                        error: function (xhr, status, error) {
+                            if (status !== 'abort') {
+                                $dropdown.removeClass('show');
+                            }
+                        }
+                    });
+                }, 180);
+            });
+
+            $(document).on('mousedown', '.autocomplete-item', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var czystaFraza = $(this).attr('data-value');
+                var wybranyTyp = $(this).attr('data-typ');
+
+                $input.val(czystaFraza);
+                $dropdown.removeClass('show').empty();
+
+                przekierujLubFiltruj(czystaFraza, wybranyTyp);
+            });
+
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('#fast-search-wrapper').length) {
+                    $dropdown.removeClass('show');
+                }
+            });
+
+            function przekierujLubFiltruj(fraza, typ) {
+                var safeFraza = fraza.trim();
+
+                if ($('#main-live-search').length > 0) {
+                    clearTimeout(fastSearchTimeout);
+                    $('#main-live-search').val(safeFraza);
+
+                    fastSearchTimeout = setTimeout(function () {
+                        var $radioObszar = $('input[name="filterTyp"][value="' + typ + '"]');
+                        if ($radioObszar.length > 0) {
+                            $radioObszar.prop('checked', true).trigger('change');
+                        } else if (typeof wykonajFiltrowanie === "function") {
+                            wykonajFiltrowanie();
+                        }
+                    }, 50);
+                } else {
+                    var baseUrl = '@Url.Action("Results", "Search")';
+                    window.location.href = baseUrl + '?query=' + encodeURIComponent(safeFraza) + '&typ=' + encodeURIComponent(typ);
+                }
+            }
+        });
+    </script>
 
     @RenderSection("scripts", required: false)
 </body>

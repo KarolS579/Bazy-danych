@@ -1,0 +1,355 @@
+﻿@model Bazy_danych.Models.GlobalSearchViewModel
+@{
+    ViewBag.Title = "Wyszukiwarka z filtrami";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row g-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+                <div class="bg-dark text-white p-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-sliders text-warning fs-5"></i>
+                    <h5 class="m-0 fw-bold" style="font-size: 16px; letter-spacing: 0.5px;">Obszary systemowe</h5>
+                </div>
+
+                <div class="card-body bg-light p-2" id="sidebar-filter-group">
+                    <div class="d-flex flex-column gap-1">
+
+                        <label class="btn btn-sm text-start py-2 px-3 border-0 rounded-2 sidebar-filter-btn">
+                            <input type="radio" name="filterTyp" value="Wszystko" class="search-filter d-none" checked />
+                            <i class="bi bi-grid-1x2-fill me-2"></i> Wszystko
+                        </label>
+
+                        <label class="btn btn-sm text-start py-2 px-3 border-0 rounded-2 sidebar-filter-btn">
+                            <input type="radio" name="filterTyp" value="Sprzet" class="search-filter d-none" />
+                            <i class="bi bi-tools me-2"></i> Sprzęt
+                        </label>
+
+                        <label class="btn btn-sm text-start py-2 px-3 border-0 rounded-2 sidebar-filter-btn">
+                            <input type="radio" name="filterTyp" value="Klienci" class="search-filter d-none" />
+                            <i class="bi bi-people-fill me-2"></i> Klienci
+                        </label>
+
+                        <label class="btn btn-sm text-start py-2 px-3 border-0 rounded-2 sidebar-filter-btn">
+                            <input type="radio" name="filterTyp" value="Wynajmy" class="search-filter d-none" />
+                            <i class="bi bi-file-earmark-spreadsheet me-2"></i> Wynajmy
+                        </label>
+
+                        <label class="btn btn-sm text-start py-2 px-3 border-0 rounded-2 sidebar-filter-btn">
+                            <input type="radio" name="filterTyp" value="Serwis" class="search-filter d-none" />
+                            <i class="bi bi-wrench-adjustable me-2"></i> Serwis
+                        </label>
+
+                        <label class="btn btn-sm text-start py-2 px-3 border-0 rounded-2 sidebar-filter-btn">
+                            <input type="radio" name="filterTyp" id="typMagazyny" value="Magazyny" class="search-filter d-none" />
+                            <i class="bi bi-geo-alt-fill me-2"></i> Magazyny
+                        </label>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="card shadow-sm p-4 mb-4 bg-white border-light rounded-3 position-relative">
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-md-8 position-relative">
+                        <label class="form-label fw-bold">Czego szukasz?</label>
+                        <div class="input-group input-group-lg shadow-sm rounded">
+                            <span class="input-group-text bg-light p-1 border-end-0">
+                                <button type="button" class="btn btn-primary d-flex align-items-center gap-2 py-1 px-3" id="btn-toggle-advanced-filters">
+                                    <i class="bi bi-sliders fs-5" id="plus-icon"></i>
+                                    <span id="plus-text" class="fw-bold small">Filtry</span>
+                                </button>
+                            </span>
+                            <input type="text" id="main-live-search" class="form-control border-start-0 ps-3"
+                                   placeholder="Wpisz nazwę, model, lokalizację lub numer seryjny..."
+                                   value="@Model.SearchQuery" autocomplete="off" autofocus />
+                        </div>
+
+                        <div id="advanced-filters-panel" class="card shadow-lg p-4 position-absolute w-100 mt-2 d-none">
+                            <h6 class="fw-bold text-secondary border-bottom pb-2 mb-3"><i class="bi bi-funnel-fill text-primary"></i> Precyzyjne kryteria dodatkowe</h6>
+                            <div class="row g-3">
+
+                                <div class="col-md-6 filter-section-group" data-section="Sprzet">
+                                    <div class="p-3 bg-light bg-opacity-50 rounded border h-100">
+                                        <h6 class="text-primary fw-bold border-bottom pb-1 mb-2"><i class="bi bi-tools"></i> Sprzęt</h6>
+                                        <div class="mb-2">
+                                            <label class="form-label small mb-0">Cena wynajmu (Od - Do):</label>
+                                            <div class="input-group input-group-sm">
+                                                <input type="number" id="filter-cena-od" class="form-control adv-input" placeholder="Od">
+                                                <input type="number" id="filter-cena-do" class="form-control adv-input" placeholder="Do">
+                                            </div>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small mb-0">Numer Seryjny:</label>
+                                            <input type="text" id="filter-num-seryjny" class="form-control form-control-sm adv-input" placeholder="Wpisz S/N">
+                                        </div>
+                                        <div>
+                                            <label class="form-label small mb-0">Kategoria / Segment:</label>
+                                            <input type="text" id="filter-kategoria" class="form-control form-control-sm adv-input" placeholder="np. Koparki">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 filter-section-group" data-section="Magazyny">
+                                    <div class="p-3 bg-light bg-opacity-50 rounded border h-100">
+                                        <h6 class="text-dark fw-bold border-bottom pb-1 mb-2"><i class="bi bi-geo-alt-fill text-warning"></i> Filtry Magazynowe</h6>
+                                        <div class="mb-2">
+                                            <label class="form-label small mb-0">Lokalizacja (Miejscowość / Filia):</label>
+                                            <input type="text" id="filter-magazyn-lokalizacja" class="form-control form-control-sm adv-input" placeholder="np. Nowy Sącz, Kraków">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small mb-0">Minimalna pojemność (jednostek):</label>
+                                            <input type="number" id="filter-magazyn-pojemnosc" class="form-control form-control-sm adv-input" placeholder="Minimalna ogólna pojemność">
+                                        </div>
+                                        <div>
+                                            <label class="form-label small mb-0">Status dostępności magazynu:</label>
+                                            <select id="filter-magazyn-status" class="form-select form-select-sm adv-input">
+                                                <option value="">Wszystkie statusy</option>
+                                                <option value="Aktywny">Aktywny (Wolne miejsca)</option>
+                                                <option value="Zapełniony">Zapełniony (Brak miejsca)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="d-flex justify-content-end mt-3 border-top pt-2">
+                                <button type="button" class="btn btn-sm btn-link text-muted me-2" id="btn-clear-adv">Wyczyść filtry</button>
+                                <button type="button" class="btn btn-sm btn-primary px-4 fw-bold" id="btn-close-adv">Zastosuj filtry</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Sortuj wyniki po:</label>
+                        <select id="search-sort" class="form-select form-select-lg shadow-sm">
+                            <option value="NazwaAsc" selected>Nazwa / Nazwisko (A-Z)</option>
+                            <option value="NazwaDesc">Nazwa / Nazwisko (Z-A)</option>
+                            <option value="CenaAsc">Cena wynajmu: rosnąco</option>
+                            <option value="CenaDesc">Cena wynajmu: malejąco</option>
+                            <option value="MagazynAsc">Lokalizacja (Magazyny alfabetycznie)</option>
+                            <option value="KategoriaAsc">Segment (Kategoria sprzętu)</option>
+                            <option value="StatusAsc">Status / Dostępność</option>
+                            <option value="DataNajnowsze">Najnowsze wpisy (Data dodania)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="live-search-results">
+                @Html.Partial("_SearchResults", Model)
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .sidebar-filter-btn {
+        background-color: transparent;
+        color: #495057;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+    }
+
+        .sidebar-filter-btn:hover {
+            background-color: rgba(0, 0, 0, 0.04);
+            color: #000;
+        }
+
+    #advanced-filters-panel {
+        background-color: rgba(255, 255, 255, 0.92) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 0, 0, 0.12) !important;
+        border-radius: 10px;
+        transition: all 0.2s ease-in-out;
+        z-index: 1060;
+        left: 0;
+    }
+</style>
+
+@section Scripts {
+    <script type="text/javascript">
+        function wykonajFiltrowanie() {
+            var queryText = $('#main-live-search').val();
+            var typText = $('input[name="filterTyp"]:checked').val() || "Wszystko";
+            var sortText = $('#search-sort').val() || "NazwaAsc";
+
+            var cenaOd = $('#filter-cena-od').val();
+            var cenaDo = $('#filter-cena-do').val();
+            var numSeryjny = $('#filter-num-seryjny').val();
+            var kategoria = $('#filter-kategoria').val();
+
+            var magLokalizacja = $('#filter-magazyn-lokalizacja').val();
+            var magPojemnosc = $('#filter-magazyn-pojemnosc').val();
+            var magStatus = $('#filter-magazyn-status').val();
+
+            // Ukrywanie/pokazywanie boksów sekcji
+            if (typText === "Wszystko") {
+                $('.filter-section-group').removeClass('d-none');
+            } else {
+                $('.filter-section-group').addClass('d-none');
+                if (typText === "Sprzet") $('.filter-section-group[data-section="Sprzet"]').removeClass('d-none');
+                if (typText === "Magazyny") $('.filter-section-group[data-section="Magazyny"]').removeClass('d-none');
+            }
+
+            // Aktualizacja stylów przycisków w menu bocznym
+            $('input[name="filterTyp"]').each(function() {
+                var label = $(this).closest('.sidebar-filter-btn');
+                if ($(this).is(':checked')) {
+                    var activeBg = $(this).val() === 'Wszystko' ? 'bg-secondary' :
+                                   $(this).val() === 'Sprzet' ? 'bg-primary' :
+                                   $(this).val() === 'Klienci' ? 'bg-success' :
+                                   $(this).val() === 'Wynajmy' ? 'bg-info text-dark' :
+                                   $(this).val() === 'Serwis' ? 'bg-danger' :
+                                   'bg-dark text-warning';
+
+                    label.addClass(activeBg + ' text-white fw-bold shadow-sm');
+                } else {
+                    label.removeClass('bg-secondary bg-primary bg-success bg-info bg-danger bg-dark text-white text-dark text-warning fw-bold shadow-sm');
+                }
+            });
+
+            $('#live-search-results').css('opacity', '0.4');
+
+            $.ajax({
+                url: '@Url.Action("LiveSearch", "Search")',
+                type: 'GET',
+                data: {
+                    query: queryText,
+                    typ: typText,
+                    sort: sortText,
+                    cenaOd: cenaOd,
+                    cenaDo: cenaDo,
+                    numSeryjny: numSeryjny,
+                    kategoria: kategoria,
+                    lokalizacja: magLokalizacja,
+                    pojemnoscMin: magPojemnosc,
+                    magazynStatus: magStatus
+                },
+                success: function (data) {
+                    $('#live-search-results').html(data).css('opacity', '1');
+
+                    // Podświetlanie pasujących fraz
+                    var currentQuery = $('#main-live-search').val().trim();
+                    if (currentQuery.length > 1) {
+                        var words = currentQuery.split(' ');
+                        function podswietlTekst(element, word) {
+                            var regex = new RegExp("(" + word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + ")", "gi");
+                            $(element).contents().each(function () {
+                                if (this.nodeType === 3) {
+                                    var czystyTekst = this.nodeValue;
+                                    if (regex.test(czystyTekst)) {
+                                        var kontener = $("<span>").html(czystyTekst.replace(regex, "<strong class='text-decoration-underline text-dark bg-warning-subtle'>$1</strong>"));
+                                        $(this).replaceWith(kontener.contents());
+                                    }
+                                } else if (this.nodeType === 1 && this.nodeName !== 'A' && this.nodeName !== 'BUTTON' && this.nodeName !== 'SMALL') {
+                                    podswietlTekst(this, word);
+                                }
+                            });
+                        }
+
+                        words.forEach(function (word) {
+                            if (word.length > 1) {
+                                $('#live-search-results td, #live-search-results strong').each(function () {
+                                    podswietlTekst(this, word);
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            var delayTimer;
+
+            // Live-search głównego inputa tekstowego
+            $('#main-live-search').on('input', function () {
+                clearTimeout(delayTimer);
+                delayTimer = setTimeout(function () { wykonajFiltrowanie(); }, 250);
+            });
+
+            // NAPRAWIONO: Jawne powiązanie zdarzeń zmiany (change) dla pól radiowych oraz zaawansowanych
+            $('input[name="filterTyp"]').on('change', function () {
+                wykonajFiltrowanie();
+            });
+
+            $('.adv-input, #search-sort').on('change keyup', function () {
+                wykonajFiltrowanie();
+            });
+
+            // Zarządzanie panelem filtrów rozszerzonych
+            $('#btn-toggle-advanced-filters').on('click', function (e) {
+                e.stopPropagation();
+                var panel = $('#advanced-filters-panel');
+                panel.toggleClass('d-none');
+                if (panel.hasClass('d-none')) {
+                    $(this).removeClass('btn-danger').addClass('btn-primary');
+                    $('#plus-icon').addClass('bi-sliders').removeClass('bi-dash-circle-fill');
+                    $('#plus-text').text('Filtry');
+                } else {
+                    $(this).removeClass('btn-primary').addClass('btn-danger');
+                    $('#plus-icon').removeClass('bi-sliders').addClass('bi-dash-circle-fill');
+                    $('#plus-text').text('Zamknij');
+                }
+            });
+
+            $('#btn-close-adv').on('click', function() {
+                $('#advanced-filters-panel').addClass('d-none');
+                $('#btn-toggle-advanced-filters').removeClass('btn-danger').addClass('btn-primary');
+                $('#plus-icon').addClass('bi-sliders').removeClass('bi-dash-circle-fill');
+                $('#plus-text').text('Filtry');
+                wykonajFiltrowanie();
+            });
+
+            $('#btn-clear-adv').on('click', function() {
+                $('.adv-input').val('');
+                wykonajFiltrowanie();
+            });
+
+            $('#advanced-filters-panel').on('click', function(e) { e.stopPropagation(); });
+
+            $(document).on('click', function() {
+                $('#advanced-filters-panel').addClass('d-none');
+                $('#btn-toggle-advanced-filters').removeClass('btn-danger').addClass('btn-primary');
+                $('#plus-icon').addClass('bi-sliders').removeClass('bi-dash-circle-fill');
+                $('#plus-text').text('Filtry');
+            });
+
+            // Pierwsze wywołanie na start
+            wykonajFiltrowanie();
+        });
+
+        // Obsługa porównywarki
+        $(document).on('click', '.btn-toggle-compare', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var $btn = $(this);
+            var id = $btn.data('id');
+            var action = $btn.data('action');
+            var url = (action === 'dodaj') ? '@Url.Action("DodajDoPorownania", "Search")' : '@Url.Action("UsunZPorownania", "Search")';
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: { id: id },
+                success: function (response) {
+                    if (response.success) {
+                        wykonajFiltrowanie();
+                    } else {
+                        alert(response.message || "Wystąpił błąd podczas modyfikacji porównywarki.");
+                    }
+                },
+                error: function () {
+                    alert("Błąd połączenia serwera. Nie można zaktualizować porównywarki.");
+                }
+            });
+        });
+    </script>
+}

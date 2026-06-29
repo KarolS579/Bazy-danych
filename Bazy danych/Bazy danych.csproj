@@ -149,6 +149,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\KlienciController.cs" />
+    <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\SerwisController.cs" />
     <Compile Include="Controllers\EquipmentController.cs" />
     <Compile Include="Controllers\WarehouseController.cs" />
@@ -216,6 +217,7 @@
     <Compile Include="Models\Serwis.cs" />
     <Compile Include="Models\Sprzet.cs" />
     <Compile Include="Models\Wynajem.cs" />
+    <Compile Include="Models\Wyszukaj.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -291,6 +293,9 @@
     <Content Include="Views\Wynajmy\Create.cshtml" />
     <Content Include="Views\Wynajmy\Index.cshtml" />
     <Content Include="Views\Wynajmy\Archiwum.cshtml" />
+    <Content Include="Views\Search\Porownaj.cshtml" />
+    <Content Include="Views\Search\Results.cshtml" />
+    <Content Include="Views\Search\_SearchResults.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
