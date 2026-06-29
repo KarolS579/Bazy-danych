@@ -200,6 +200,10 @@
     <Compile Include="Migrations\202606242135158_NaprawaNazwyTabeliWProcedurze.Designer.cs">
       <DependentUpon>202606242135158_NaprawaNazwyTabeliWProcedurze.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202606291405506_DodanieMagazynu.cs" />
+    <Compile Include="Migrations\202606291405506_DodanieMagazynu.Designer.cs">
+      <DependentUpon>202606291405506_DodanieMagazynu.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Triggers.cs" />
@@ -348,6 +352,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202606242135158_NaprawaNazwyTabeliWProcedurze.resx">
       <DependentUpon>202606242135158_NaprawaNazwyTabeliWProcedurze.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202606291405506_DodanieMagazynu.resx">
+      <DependentUpon>202606291405506_DodanieMagazynu.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
