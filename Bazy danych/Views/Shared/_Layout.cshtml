@@ -15,7 +15,14 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="@Url.Action("Index", "Home")">BuildRent</a>
+            @if (Request.IsAuthenticated && !User.IsInRole("Admin"))
+            {
+                <a class="navbar-brand fw-bold text-success" href="@Url.Action("UserIndex", "Home")">BuildRent</a>
+            }
+            else
+            {
+                <a class="navbar-brand fw-bold" href="@Url.Action("Index", "Home")">BuildRent</a>
+            }
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -23,21 +30,37 @@
                 <ul class="navbar-nav">
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Equipment", "Equipment")">Sprzęt</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Warehouses", "Warehouse")">Magazyny</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Index", "Klienci")">Klienci</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Index", "Wynajmy")">Wynajem</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Index", "Serwisy")">Serwis</a>
-                        </li>
+                        if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link fw-bold text-warning" href="@Url.Action("Equipment", "Equipment")">Sprzęt (Admin)</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Warehouses", "Warehouse")">Magazyny</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Klienci")">Klienci</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Wynajmy")">Wynajem globalny</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Serwisy")">Serwis</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link fw-bold text-success" href="@Url.Action("Index", "UserEquipment")">
+                                    <i class="bi bi-shop"></i> Katalog Sprzętu
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Wynajmy")">
+                                    <i class="bi bi-file-earmark-text"></i> Moje Wynajmy
+                                </a>
+                            </li>
+                        }
                     }
                 </ul>
 

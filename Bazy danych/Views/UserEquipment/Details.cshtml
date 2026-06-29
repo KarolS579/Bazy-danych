@@ -1,0 +1,86 @@
+﻿@model Bazy_danych.Models.Sprzet
+
+@{
+    ViewBag.Title = Model.Nazwa + " - Szczegóły";
+
+    // Prosta automatyzacja zdjęć na podstawie kategorii sprzętu
+    var kategoria = (Model.Kategoria ?? "").ToLower();
+    var fallbackImage = "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500&q=80"; // ogólny placeholder techniczny
+
+    if (kategoria.Contains("koparka") || kategoria.Contains("budow"))
+    {
+        fallbackImage = "https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?w=600&q=80";
+    }
+    else if (kategoria.Contains("wiert") || kategoria.Contains("narzedz"))
+    {
+        fallbackImage = "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600&q=80";
+    }
+}
+
+<div class="container mt-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "UserEquipment")">Katalog</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Nazwa</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-light">
+                <img src="@fallbackImage" class="img-fluid object-fit-cover w-100" style="max-height: 400px;" alt="@Model.Nazwa" />
+                <div class="card-footer bg-white border-0 text-center py-3">
+                    <span class="text-muted small"><i class="bi bi-camera"></i> Zdjęcie poglądowe modelu urządzenia</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <span class="badge bg-primary-subtle text-primary mb-2 px-3 py-2 rounded-pill text-uppercase tracking-wider fw-bold">
+                @Model.Kategoria
+            </span>
+            <h1 class="display-5 fw-bold text-dark mb-3">@Model.Nazwa</h1>
+
+            <hr class="my-4 text-muted" />
+
+            <div class="p-3 bg-success-subtle rounded-3 mb-4 d-inline-block border border-success-subtle">
+                <span class="text-muted d-block small text-uppercase">Cena za dobę wynajmu</span>
+                <span class="display-6 fw-bold text-success">@Model.Cena_wynajmu.ToString("0.00") PLN</span>
+                <span class="text-success text-opacity-75">/ brutto</span>
+            </div>
+
+            <h4 class="h5 fw-bold text-secondary mb-3">Specyfikacja techniczna</h4>
+            <div class="card border-0 bg-light rounded-3 p-3 mb-4">
+                <div class="row row-cols-2 g-3">
+                    <div class="col">
+                        <small class="text-muted d-block">Identyfikator sprzętu</small>
+                        <strong class="text-dark">#@Model.Id</strong>
+                    </div>
+                    <div class="col">
+                        <small class="text-muted d-block">Numer Seryjny</small>
+                        <code class="text-dark fw-bold">@Model.NumerSeryjny</code>
+                    </div>
+                    <div class="col">
+                        <small class="text-muted d-block">Lokalizacja odbioru</small>
+                        <strong class="text-dark">
+                            @(Model.Magazyn != null ? Model.Magazyn.Nazwa : "Brak przypisanego magazynu")
+                        </strong>
+                    </div>
+                    <div class="col">
+                        <small class="text-muted d-block">Status operacyjny</small>
+                        <span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Dostępny od ręki</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <a href="@Url.Action("Create", "Wynajmy", new { sprzetId = Model.Id })" class="btn btn-lg btn-success py-3 fw-bold rounded-3 shadow">
+                    <i class="bi bi-cart-plus me-2"></i> Przejdź do wynajmu teraz
+                </a>
+                <a href="@Url.Action("Index", "UserEquipment")" class="btn btn-lg btn-link text-muted fs-6">
+                    Wróć do listy produktów
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

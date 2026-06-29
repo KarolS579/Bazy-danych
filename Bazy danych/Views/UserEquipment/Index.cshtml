@@ -1,0 +1,73 @@
+﻿@model IEnumerable<Bazy_danych.Models.Sprzet>
+
+@{
+    ViewBag.Title = "Katalog Sprzętu";
+}
+
+<div class="container mt-4">
+    <div class="mb-4">
+        <h2>Dostępny Sprzęt do Wynajęcia</h2>
+        <p class="text-muted">Przeglądaj naszą aktualną ofertę urządzeń gotowych do pracy.</p>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Numer Seryjny</th>
+                                <th>Nazwa urządzenia</th>
+                                <th>Kategoria</th>
+                                <th>Lokalizacja (Magazyn)</th>
+                                <th>Cena wynajmu (doba)</th>
+                                <th class="text-end pe-4">Akcje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <span class="badge bg-light text-dark border fw-semibold">@item.NumerSeryjny</span>
+                                    </td>
+                                    <td class="fw-bold text-secondary">@item.Nazwa</td>
+                                    <td><span class="text-muted">@item.Kategoria</span></td>
+                                    <td>
+                                        @if (item.Magazyn != null)
+                                        {
+                                            <span class="text-dark"><i class="bi bi-geo-alt"></i> @item.Magazyn.Nazwa</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small"><i>Brak danych</i></span>
+                                        }
+                                    </td>
+                                    <td class="fw-bold text-success">@item.Cena_wynajmu.ToString("0.00") PLN</td>
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group gap-2">
+                                            <a class="btn btn-sm btn-outline-secondary rounded-2" href="@Url.Action("Details", "UserEquipment", new { id = item.Id })">
+                                                Szczegóły
+                                            </a>
+                                            <a class="btn btn-sm btn-primary rounded-2 fw-bold" href="@Url.Action("Create", "Wynajmy", new { sprzetId = item.Id })">
+                                                Wynajmij
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info m-4 mb-4">
+                    <i class="bi bi-info-circle me-2"></i> Obecnie cały nasz sprzęt jest zarezerwowany. Zapraszamy wkrótce!
+                </div>
+            }
+        </div>
+    </div>
+</div>

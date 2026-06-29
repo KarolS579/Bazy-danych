@@ -1,4 +1,4 @@
-﻿using Bazy_Danych;
+﻿using Bazy_danych;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\EntityFramework.6.5.2\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.5.2\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -150,6 +150,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\UserEquipmentController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\KlienciController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
@@ -203,10 +204,6 @@
     <Compile Include="Migrations\202606242135158_NaprawaNazwyTabeliWProcedurze.cs" />
     <Compile Include="Migrations\202606242135158_NaprawaNazwyTabeliWProcedurze.Designer.cs">
       <DependentUpon>202606242135158_NaprawaNazwyTabeliWProcedurze.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202606291405506_DodanieMagazynu.cs" />
-    <Compile Include="Migrations\202606291405506_DodanieMagazynu.Designer.cs">
-      <DependentUpon>202606291405506_DodanieMagazynu.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -296,16 +293,19 @@
     <Content Include="Views\Klienci\Create.cshtml" />
     <Content Include="Views\Klienci\Edit.cshtml" />
     <Content Include="Views\Klienci\Index.cshtml" />
-    <Content Include="Views\Serwisy\Create.cshtml" />
-    <Content Include="Views\Serwisy\Index.cshtml" />
-    <Content Include="Views\Wynajmy\Create.cshtml" />
-    <Content Include="Views\Wynajmy\Index.cshtml" />
-    <Content Include="Views\Wynajmy\Archiwum.cshtml" />
     <Content Include="Views\Search\Porownaj.cshtml" />
     <Content Include="Views\Search\Results.cshtml" />
     <Content Include="Views\Search\_SearchResults.cshtml" />
-    <Content Include="Views\Wynajmy\SzablonPdf.cshtml" />
+    <Content Include="Views\UserEquipment\Index.cshtml" />
+    <Content Include="Views\UserEquipment\Details.cshtml" />
+    <Content Include="Views\Home\UserIndex.cshtml" />
+    <Content Include="Views\Serwisy\Create.cshtml" />
+    <Content Include="Views\Serwisy\Index.cshtml" />
     <Content Include="Views\Serwisy\SzablonSerwisPdf.cshtml" />
+    <Content Include="Views\Wynajmy\Archiwum.cshtml" />
+    <Content Include="Views\Wynajmy\Create.cshtml" />
+    <Content Include="Views\Wynajmy\Index.cshtml" />
+    <Content Include="Views\Wynajmy\SzablonPdf.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -367,9 +367,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202606242135158_NaprawaNazwyTabeliWProcedurze.resx">
       <DependentUpon>202606242135158_NaprawaNazwyTabeliWProcedurze.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202606291405506_DodanieMagazynu.resx">
-      <DependentUpon>202606291405506_DodanieMagazynu.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

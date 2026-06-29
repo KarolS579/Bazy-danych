@@ -254,6 +254,15 @@ namespace Bazy_danych.Controllers
             {
                 var q = db.Wynajmy.Include(w => w.Sprzets).Include(w => w.Klient).AsQueryable();
 
+                // RESTRICTION: Non-admin users only see their own rentals
+                if (!User.IsInRole("Admin"))
+                {
+                    string currentEmail = (User.Identity.Name ?? "").Trim().ToLower();
+                    var profilKlienta = db.Klienci.FirstOrDefault(k => k.Email.Trim().ToLower() == currentEmail);
+                    int klId = profilKlienta != null ? profilKlienta.Id : -1;
+                    q = q.Where(w => w.KlientId == klId);
+                }
+
                 foreach (var word in words)
                 {
                     string w = word;

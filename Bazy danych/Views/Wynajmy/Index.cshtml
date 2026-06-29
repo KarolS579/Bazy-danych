@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Bazy_danych.Models.Wynajem>
+@model IEnumerable<Bazy_danych.Models.Wynajem>
 
 @{
     ViewBag.Title = "Lista Wynajmów";
@@ -37,25 +37,49 @@
             <th style="width: 1%; white-space: nowrap; padding-left: 12px;" class="text-start">Akcje</th>
         </tr>
     </thead>
-    <tbody>
-        @foreach (var item in Model)
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        if (User.IsInRole("Admin"))
         {
-            <tr>
-                <td>@item.Klient.Imie @item.Klient.Nazwisko</td>
-                <td>[@item.Sprzets.NumerSeryjny] @item.Sprzets.Nazwa</td>
-                <td>@item.DataWynajmu.ToShortDateString()</td>
-                <td>@(item.DataZwrotu.HasValue ? item.DataZwrotu.Value.ToShortDateString() : "Brak danych")</td>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Klient.Imie @item.Klient.Nazwisko</td>
+                        <td>[@item.Sprzets.NumerSeryjny] @item.Sprzets.Nazwa</td>
+                        <td>@item.DataWynajmu.ToShortDateString()</td>
+                        <td>@(item.DataZwrotu.HasValue ? item.DataZwrotu.Value.ToShortDateString() : "Brak danych")</td>
 
-                <td style="white-space: nowrap; padding-left: 12px;" class="text-start">
-                    @Html.ActionLink("Drukuj PDF", "DrukujPdf", new { id = item.Id }, new { @class = "btn btn-danger btn-sm", style = "margin-right: 5px;" })
+                        <td style="white-space: nowrap; padding-left: 12px;" class="text-start">
+                            @Html.ActionLink("Drukuj PDF", "DrukujPdf", new { id = item.Id }, new { @class = "btn btn-danger btn-sm", style = "margin-right: 5px;" })
 
-                    @using (Html.BeginForm("Delete", "Wynajmy", new { id = item.Id }, FormMethod.Post, new { onsubmit = "return confirm('Czy na pewno chcesz usunąć ten wynajem i zwrócić sprzęt do magazynu?');", style = "display:inline; margin: 0; padding: 0;" }))
-                    {
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-outline-danger btn-sm">Usuń wynajem</button>
-                    }
-                </td>
-            </tr>
+                            @using (Html.BeginForm("Delete", "Wynajmy", new { id = item.Id }, FormMethod.Post, new { onsubmit = "return confirm('Czy na pewno chcesz usunąć ten wynajem i zwrócić sprzęt do magazynu?');", style = "display:inline; margin: 0; padding: 0;" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Usuń wynajem</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
         }
-    </tbody>
+        else
+        {
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Klient.Imie @item.Klient.Nazwisko</td>
+                        <td>[@item.Sprzets.NumerSeryjny] @item.Sprzets.Nazwa</td>
+                        <td>@item.DataWynajmu.ToShortDateString()</td>
+                        <td>@(item.DataZwrotu.HasValue ? item.DataZwrotu.Value.ToShortDateString() : "Brak danych")</td>
+                        <td style="white-space: nowrap; padding-left: 12px;" class="text-start">
+                            @Html.ActionLink("Drukuj PDF", "DrukujPdf", new { id = item.Id }, new { @class = "btn btn-danger btn-sm", style = "margin-right: 5px;" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        }
+    }
 </table>
