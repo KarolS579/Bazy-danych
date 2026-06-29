@@ -30,7 +30,6 @@ namespace Bazy_danych.Controllers
         }
 
         // FORMULARZ DODAWANIA (GET)
-        [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
             db.Configuration.ProxyCreationEnabled = false;
@@ -65,7 +64,6 @@ namespace Bazy_danych.Controllers
         // ZAPIS WYNAJMU (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
         public ActionResult Create([Bind(Include = "Id,DataWynajmu,DataZwrotu,SprzetId,KlientId")] Wynajem wynajem)
         {
             if (ModelState.IsValid)

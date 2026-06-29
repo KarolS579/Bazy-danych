@@ -40,5 +40,8 @@ namespace Bazy_danych.Models
         [StringLength(100, ErrorMessage = "Wprowadzone uwagi są zbyt długie (maksymalnie 100 znaków)!")]
         [Display(Name = "Uwagi")]
         public string Uwagi { get; set; }
+
+        [Display(Name = "Identyfikator Użytkownika")]
+        public string ApplicationUserId { get; set; }
     }
 }
