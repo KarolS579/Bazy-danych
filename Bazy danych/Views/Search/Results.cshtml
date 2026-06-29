@@ -23,28 +23,32 @@
 
                         <label class="btn btn-sm text-start py-2 px-3 border-0 rounded-2 sidebar-filter-btn">
                             <input type="radio" name="filterTyp" value="Sprzet" class="search-filter d-none" />
-                            <i class="bi bi-tools me-2"></i> Sprzęt
-                        </label>
-
-                        <label class="btn btn-sm text-start py-2 px-3 border-0 rounded-2 sidebar-filter-btn">
-                            <input type="radio" name="filterTyp" value="Klienci" class="search-filter d-none" />
-                            <i class="bi bi-people-fill me-2"></i> Klienci
+                            <i class="bi bi-tools me-2"></i> Sprzęt i Urządzenia
                         </label>
 
                         <label class="btn btn-sm text-start py-2 px-3 border-0 rounded-2 sidebar-filter-btn">
                             <input type="radio" name="filterTyp" value="Wynajmy" class="search-filter d-none" />
-                            <i class="bi bi-file-earmark-spreadsheet me-2"></i> Wynajmy
+                            <i class="bi bi-file-earmark-text me-2"></i> Wynajmy i Umowy
                         </label>
 
                         <label class="btn btn-sm text-start py-2 px-3 border-0 rounded-2 sidebar-filter-btn">
-                            <input type="radio" name="filterTyp" value="Serwis" class="search-filter d-none" />
-                            <i class="bi bi-wrench-adjustable me-2"></i> Serwis
+                            <input type="radio" name="filterTyp" value="Magazyny" class="search-filter d-none" />
+                            <i class="bi bi-building me-2"></i> Magazyny
                         </label>
 
-                        <label class="btn btn-sm text-start py-2 px-3 border-0 rounded-2 sidebar-filter-btn">
-                            <input type="radio" name="filterTyp" id="typMagazyny" value="Magazyny" class="search-filter d-none" />
-                            <i class="bi bi-geo-alt-fill me-2"></i> Magazyny
-                        </label>
+                        @* Poniższe opcje będą widoczne TYLKO dla Administratora *@
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <label class="btn btn-sm text-start py-2 px-3 border-0 rounded-2 sidebar-filter-btn">
+                                <input type="radio" name="filterTyp" value="Klienci" class="search-filter d-none" />
+                                <i class="bi bi-people me-2"></i> Klienci
+                            </label>
+
+                            <label class="btn btn-sm text-start py-2 px-3 border-0 rounded-2 sidebar-filter-btn">
+                                <input type="radio" name="filterTyp" value="Serwis" class="search-filter d-none" />
+                                <i class="bi bi-wrench me-2"></i> Zgłoszenia Serwisowe
+                            </label>
+                        }
 
                     </div>
                 </div>

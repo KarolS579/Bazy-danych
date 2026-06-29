@@ -204,8 +204,20 @@ namespace Bazy_danych.Controllers
 
                 else if (user != null && user.EmailConfirmed && userManager.CheckPassword(user, model.Password))
                 {
+                    // 1. Logowanie użytkownika w systemie
                     await SignInAsync(user, model.RememberMe);
-                    return RedirectToAction("Index", "Home");
+
+                    // 2. Dynamiczne sprawdzenie roli i przekierowanie
+                    if (await userManager.IsInRoleAsync(user.Id, "Admin"))
+                    {
+                        // Jeśli zalogowany użytkownik ma rolę Admina, trafia do widoku zarządzania sprzętem
+                        return RedirectToAction("Equipment", "Equipment");
+                    }
+                    else
+                    {
+                        // W przeciwnym wypadku (rola User / Klient) trafia do bezpiecznego, sklepowego katalogu ofertowego
+                        return RedirectToAction("Index", "UserEquipment");
+                    }
                 }
 
                 else

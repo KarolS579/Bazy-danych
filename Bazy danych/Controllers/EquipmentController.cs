@@ -9,7 +9,7 @@ using Bazy_danych.Models;
 
 namespace Bazy_danych.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class EquipmentController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();

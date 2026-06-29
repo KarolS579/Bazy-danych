@@ -1,4 +1,4 @@
-﻿namespace Bazy_Danych.Models
+﻿namespace Bazy_danych.Models
 {
     public class Home
     {

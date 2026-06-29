@@ -15,12 +15,22 @@ namespace Bazy_danych.Controllers
         // LISTA WYNAJMÓW (Index)
         public ActionResult Index()
         {
-            // .Include automatycznie dołącza powiązane dane klienta i sprzętu w jednym zapytaniu SQL
-            var wynajmy = db.Wynajmy.Include(w => w.Klient).Include(w => w.Sprzets).ToList();
-            return View(wynajmy);
+            var query = db.Wynajmy.Include(w => w.Klient).Include(w => w.Sprzets);
+
+            if (!User.IsInRole("Admin"))
+            {
+                string currentEmail = (User.Identity.Name ?? "").Trim().ToLower();
+                var profilKlienta = db.Klienci.ToList().FirstOrDefault(k => (k.Email ?? "").Trim().ToLower() == currentEmail);
+                int klId = profilKlienta != null ? profilKlienta.Id : -1;
+
+                return View(query.Where(w => w.KlientId == klId).ToList());
+            }
+
+            return View(query.ToList());
         }
 
         // FORMULARZ DODAWANIA (GET)
+        [Authorize(Roles = "Admin")]
         public ActionResult Create()
         {
             db.Configuration.ProxyCreationEnabled = false;
@@ -55,6 +65,7 @@ namespace Bazy_danych.Controllers
         // ZAPIS WYNAJMU (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public ActionResult Create([Bind(Include = "Id,DataWynajmu,DataZwrotu,SprzetId,KlientId")] Wynajem wynajem)
         {
             if (ModelState.IsValid)
@@ -87,6 +98,7 @@ namespace Bazy_danych.Controllers
         // USUWANIE WYNAJMU (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int id)
         {
             var wynajem = db.Wynajmy.Find(id);
@@ -109,6 +121,7 @@ namespace Bazy_danych.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public ActionResult CzyscHistorie()
         {
             // Definicja / Aktualizacja procedury
@@ -162,6 +175,7 @@ namespace Bazy_danych.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "Admin")]
         public ActionResult Archiwum()
         {
             var archiwum = db.ArchiwumWynajmow
