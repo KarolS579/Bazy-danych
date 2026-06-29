@@ -18,7 +18,7 @@
             <th>Data zakończenia</th>
             <th>Opis usterki</th>
             <th>Status zgłoszenia</th>
-            <th>Akcje</th>
+            <th style="white-space: nowrap;">Akcje</th>
         </tr>
     </thead>
     <tbody>
@@ -40,14 +40,18 @@
                     }
                 </td>
                 <td>
-                    @if (!item.DataZakonczenia.HasValue)
-                    {
-                        using (Html.BeginForm("PowrotZSerwisu", "Serwisy", new { id = item.Id }, FormMethod.Post))
+                    <div class="d-flex align-items-center gap-1">
+                        @Html.ActionLink("Drukuj PDF", "DrukujSerwisPdf", "Serwisy", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" })
+
+                        @if (!item.DataZakonczenia.HasValue)
                         {
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-success btn-sm">Odbierz z serwisu (Ustaw Dostępny)</button>
+                            using (Html.BeginForm("PowrotZSerwisu", "Serwisy", new { id = item.Id }, FormMethod.Post, new { style = "margin: 0; padding: 0; display: inline;" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-success btn-sm">Odbierz z serwisu (Ustaw Dostępny)</button>
+                            }
                         }
-                    }
+                    </div>
                 </td>
             </tr>
         }

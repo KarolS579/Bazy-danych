@@ -21,7 +21,7 @@
             <button type="submit" class="my-custom-btn fw-bold" onclick="return confirm('Czy na pewno chcesz zarchiwizować i przenieść do archiwum wpisy starsze niż dzisiaj?');">
                 <i class="glyphicon glyphicon-trash"></i> Uruchom archiwizację bazy (starsze niż dzisiaj)
             </button>
-    }
+        }
     </div>
 
 </div>
@@ -47,10 +47,12 @@
                 <td>@(item.DataZwrotu.HasValue ? item.DataZwrotu.Value.ToShortDateString() : "Brak danych")</td>
 
                 <td style="white-space: nowrap; padding-left: 12px;" class="text-start">
+                    @Html.ActionLink("Drukuj PDF", "DrukujPdf", new { id = item.Id }, new { @class = "btn btn-danger btn-sm", style = "margin-right: 5px;" })
+
                     @using (Html.BeginForm("Delete", "Wynajmy", new { id = item.Id }, FormMethod.Post, new { onsubmit = "return confirm('Czy na pewno chcesz usunąć ten wynajem i zwrócić sprzęt do magazynu?');", style = "display:inline; margin: 0; padding: 0;" }))
                     {
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-danger btn-sm">Usuń wynajem</button>
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Usuń wynajem</button>
                     }
                 </td>
             </tr>
